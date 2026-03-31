@@ -1,0 +1,92 @@
+<!-- 食谱推荐页面 -->
+<view class="container">
+  <!-- 营养需求信息 -->
+  <view wx:if="{{nutritionNeeds}}" class="nutrition-info">
+    <view class="nutrition-title">每日营养推荐</view>
+    <view class="nutrition-content">
+      <view class="nutrition-item">
+        <text class="nutrition-label">热量：</text>
+        <text class="nutrition-value">{{nutritionNeeds.calorie}} 大卡</text>
+      </view>
+      <view class="nutrition-item">
+        <text class="nutrition-label">蛋白质：</text>
+        <text class="nutrition-value">{{nutritionNeeds.protein}} g</text>
+      </view>
+      <view class="nutrition-item">
+        <text class="nutrition-label">碳水：</text>
+        <text class="nutrition-value">{{nutritionNeeds.carb}} g</text>
+      </view>
+      <view class="nutrition-item">
+        <text class="nutrition-label">脂肪：</text>
+        <text class="nutrition-value">{{nutritionNeeds.fat}} g</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选器 -->
+  <view class="filter-container">
+    <picker bindchange="onFilterChange" value="{{filterIndex}}" range="{{filterTypes}}">
+      <view class="filter-btn">
+        {{filterTypes[filterIndex]}}
+        <text class="arrow">▼</text>
+      </view>
+    </picker>
+    <button class="recommend-btn" bindtap="getRecommendRecipe">
+      {{hasRecommend ? '重新推荐' : '个性化推荐'}}
+    </button>
+  </view>
+
+  <!-- 食谱列表 -->
+  <view class="recipe-list">
+    <block wx:if="{{loading}}">
+      <view class="loading">加载中...</view>
+    </block>
+    <block wx:elif="{{filteredList.length === 0}}">
+      <view class="empty">暂无食谱数据</view>
+    </block>
+    <block wx:else>
+      <view class="recipe-grid">
+        <view wx:for="{{filteredList}}" wx:key="id" class="recipe-card" bindtap="goToRecipeDetail" data-item="{{item}}">
+          <!-- 食谱图片 -->
+          <view class="recipe-image">
+            <image wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFill"></image>
+            <view wx:else class="image-placeholder">
+              <text>食谱图片</text>
+            </view>
+          </view>
+
+          <!-- 食谱信息 -->
+          <view class="recipe-info">
+            <view class="recipe-name">{{item.recipe_name || item.name}}</view>
+            
+            <!-- 营养信息 -->
+            <view class="nutrition-stats">
+              <view class="nutrition-stat">
+                <text class="stat-value">{{item.calorie}} 大卡</text>
+              </view>
+              <view class="nutrition-stat">
+                <text class="stat-value">{{item.cooking_time || 30}} 分钟</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 烹饪步骤弹窗 -->
+  <view wx:if="{{showStepDialog}}" class="dialog-overlay" bindtap="hideStepDialog">
+    <view class="dialog-content" catchtap="">
+      <view class="dialog-header">
+        <text class="dialog-title">{{currentRecipe.recipe_name || currentRecipe.name}} 烹饪步骤</text>
+        <button class="close-btn" bindtap="hideStepDialog">×</button>
+      </view>
+      <view class="dialog-body">
+        <view wx:for="{{cookSteps}}" wx:key="index" class="step-item">
+          <view class="step-number">{{index + 1}}</view>
+          <text class="step-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

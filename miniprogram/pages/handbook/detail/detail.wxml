@@ -1,0 +1,86 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+  
+  <view wx:else class="handbook-detail">
+    <!-- 手账标题 -->
+    <view class="handbook-title">
+      <text>{{handbookDetail.title}}</text>
+    </view>
+    
+    <!-- 手账信息 -->
+    <view class="handbook-info">
+      <text class="time">{{handbookDetail.create_time || ''}}</text>
+    </view>
+    
+    <!-- 手账图片 -->
+    <view wx:if="{{handbookDetail.image}}" class="handbook-image">
+      <image src="{{handbookDetail.image}}" mode="aspectFit"></image>
+    </view>
+    
+    <!-- 手账内容 -->
+    <view class="handbook-content">
+      <text>{{handbookDetail.content}}</text>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="handbook-actions">
+      <button bindtap="likeHandbook" class="action-btn" data-liked="{{handbookDetail.is_liked}}">
+        <text class="btn-text">{{handbookDetail.is_liked ? '取消点赞' : '点赞'}}</text>
+      </button>
+      <button bindtap="collectHandbook" class="action-btn" data-collected="{{handbookDetail.is_collected}}">
+        <text class="btn-text">{{handbookDetail.is_collected ? '取消收藏' : '收藏'}}</text>
+      </button>
+      <button bindtap="showEditDialog" class="action-btn edit-btn">
+        <text class="btn-text">编辑</text>
+      </button>
+      <button bindtap="deleteHandbook" class="action-btn delete-btn">
+        <text class="btn-text">删除</text>
+      </button>
+    </view>
+  </view>
+  
+  <!-- 编辑弹窗 -->
+  <view wx:if="{{showEditDialog}}" class="edit-dialog">
+    <view class="dialog-content">
+      <view class="dialog-header">
+        <text>编辑手账</text>
+        <text bindtap="hideEditDialog" class="close-btn">×</text>
+      </view>
+      <view class="form-item">
+        <text class="form-label">标题</text>
+        <input 
+          bindinput="onFormInput" 
+          data-key="title"
+          value="{{formData.title}}" 
+          placeholder="请输入标题" 
+          class="form-input"
+        ></input>
+      </view>
+      <view class="form-item">
+        <text class="form-label">内容</text>
+        <textarea 
+          bindinput="onFormInput" 
+          data-key="content"
+          value="{{formData.content}}" 
+          placeholder="请输入内容" 
+          class="form-textarea"
+        ></textarea>
+      </view>
+      <view class="form-item">
+        <text class="form-label">图片</text>
+        <view class="image-upload">
+          <view wx:if="{{formData.image}}" class="image-preview">
+            <image src="{{formData.image}}" mode="aspectFit"></image>
+          </view>
+          <button bindtap="chooseImage" class="upload-btn">选择图片</button>
+        </view>
+      </view>
+      <view class="dialog-footer">
+        <button bindtap="hideEditDialog" class="cancel-btn">取消</button>
+        <button bindtap="submitEdit" class="submit-btn">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

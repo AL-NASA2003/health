@@ -1,0 +1,13 @@
+{
+  "desc": "关于本小程序的索引信息，可在微信开发者工具中查看",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/login/login"
+    }
+  ]
+}

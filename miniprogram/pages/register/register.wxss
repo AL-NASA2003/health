@@ -1,0 +1,306 @@
+/* pages/register/register.wxss */
+.container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 返回登录按钮 */
+.back-to-login {
+  position: absolute;
+  top: 30rpx;
+  left: 30rpx;
+  z-index: 10;
+}
+
+.back-link {
+  font-size: 28rpx;
+  color: #07c160;
+  display: flex;
+  align-items: center;
+  gap: 5rpx;
+}
+
+/* Logo区域 */
+.logo-section {
+  margin-top: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50rpx;
+}
+
+.logo {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 20rpx rgba(7, 193, 96, 0.2);
+  margin-bottom: 20rpx;
+}
+
+.app-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.app-slogan {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 步骤指示器 */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50rpx;
+  padding: 0 20rpx;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.step-circle {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.step-item.active .step-circle {
+  background-color: #07c160;
+  color: #fff;
+}
+
+.step-text {
+  font-size: 22rpx;
+  color: #999;
+  text-align: center;
+}
+
+.step-item.active .step-text {
+  color: #07c160;
+  font-weight: 500;
+}
+
+.step-line {
+  flex: 1;
+  height: 2rpx;
+  background-color: #e0e0e0;
+  margin: 0 10rpx;
+}
+
+.step-line.active {
+  background-color: #07c160;
+}
+
+/* 注册表单卡片 */
+.register-card {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 40rpx;
+}
+
+.step-content {
+  width: 100%;
+}
+
+/* 输入组 */
+.input-group {
+  margin-bottom: 30rpx;
+}
+
+.input-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+
+.input-group.half {
+  width: 48%;
+}
+
+.input-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  background-color: #fafafa;
+}
+
+.input-placeholder {
+  color: #999;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 15rpx;
+}
+
+.input-with-button .input {
+  flex: 1;
+}
+
+.send-code-btn {
+  width: 200rpx;
+  height: 80rpx;
+  background-color: #f0f9f4;
+  color: #07c160;
+  border: 1rpx solid #07c160;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+}
+
+/* 性别选择器 */
+.gender-selector {
+  display: flex;
+  gap: 20rpx;
+}
+
+.gender-item {
+  flex: 1;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #666;
+  background-color: #fafafa;
+}
+
+.gender-item.active {
+  border-color: #07c160;
+  color: #07c160;
+  background-color: #f0f9f4;
+}
+
+/* 选择器 */
+.picker {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker::after {
+  content: '▼';
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 按钮 */
+.next-btn, .register-btn {
+  width: 100%;
+  height: 90rpx;
+  background-color: #07c160;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-radius: 12rpx;
+  margin-top: 20rpx;
+}
+
+.prev-btn {
+  width: 100%;
+  height: 80rpx;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 28rpx;
+  border-radius: 12rpx;
+  margin-top: 15rpx;
+}
+
+/* 登录入口 */
+.login-entry {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 20rpx;
+}
+
+.login-entry text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.login-link {
+  color: #07c160;
+  font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .register-card {
+    padding: 30rpx;
+  }
+  
+  .input {
+    height: 70rpx;
+    font-size: 26rpx;
+  }
+  
+  .send-code-btn {
+    height: 70rpx;
+    font-size: 22rpx;
+  }
+  
+  .gender-item {
+    height: 70rpx;
+    font-size: 26rpx;
+  }
+  
+  .picker {
+    height: 70rpx;
+    font-size: 26rpx;
+  }
+  
+  .next-btn, .register-btn {
+    height: 80rpx;
+    font-size: 30rpx;
+  }
+  
+  .prev-btn {
+    height: 70rpx;
+    font-size: 26rpx;
+  }
+}

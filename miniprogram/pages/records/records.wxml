@@ -1,0 +1,352 @@
+<view class="container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <text class="header-title">我的记录</text>
+  </view>
+
+  <!-- 日期和统计 -->
+  <view class="date-section">
+    <text class="date-text">{{currentDateForHeader || currentDate}}</text>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-header">
+    <view class="stat-item">
+      <text class="stat-value">{{totalCalories}}</text>
+      <text class="stat-label">摄入大卡</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{totalWater}}</text>
+      <text class="stat-label">饮水ml</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{totalExerciseDuration}}</text>
+      <text class="stat-label">运动分钟</text>
+    </view>
+  </view>
+
+  <!-- 导航栏 -->
+  <view class="nav-bar">
+    <view 
+      class="nav-item {{currentTab === 'diet' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="diet"
+    >
+      <text>我的记录</text>
+    </view>
+    <view 
+      class="nav-item {{currentTab === 'water' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="water"
+    >
+      <text>饮水记录</text>
+    </view>
+    <view 
+      class="nav-item {{currentTab === 'exercise' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="exercise"
+    >
+      <text>运动记录</text>
+    </view>
+  </view>
+
+  <!-- 饮食记录内容 -->
+  <view wx:if="{{currentTab === 'diet'}}" class="diet-content">
+    <!-- 日期选择器 -->
+    <view class="date-picker">
+      <text class="date-text">{{currentDate}}</text>
+    </view>
+
+    <!-- 热量统计卡片 -->
+    <view class="stats-card">
+      <text class="stats-label">今日已摄入</text>
+      <text class="stats-value">{{totalCalories}} 大卡</text>
+    </view>
+
+    <!-- 搜索框 -->
+    <view class="search-container">
+      <input 
+        class="search-input" 
+        placeholder="搜索食材/菜品" 
+        value="{{searchKey}}"
+        bindinput="onSearchInput"
+        bindconfirm="searchDiet"
+      />
+      <!-- 搜索建议 -->
+      <view wx:if="{{searchSuggest.length > 0}}" class="search-suggest">
+        <view 
+          wx:for="{{searchSuggest}}" 
+          wx:key="id"
+          class="suggest-item"
+          bindtap="selectIngredient"
+          data-item="{{item}}"
+        >
+          <text class="suggest-name">{{item.ingre_name}}</text>
+          <text class="suggest-calorie">热量：{{item.calorie}} 大卡/100g</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 饮食记录列表 -->
+    <view class="diet-list">
+      <view wx:if="{{loading}}" class="loading">加载中...</view>
+      <view wx:elif="{{dietList.length === 0}}" class="empty">暂无饮食记录</view>
+      <view wx:else>
+        <view class="diet-item" wx:for="{{dietList}}" wx:key="id">
+          <view class="diet-info">
+            <text class="diet-name">{{item.food_name}}</text>
+            <text class="diet-type">{{item.food_type}} · {{item.meal_time}} · {{item.weight}}g</text>
+          </view>
+          <view class="diet-calories">{{item.calorie}} 大卡</view>
+          <view class="diet-actions">
+            <button class="action-btn edit" bindtap="showEditDialog" data-item="{{item}}">编辑</button>
+            <button class="action-btn delete" bindtap="deleteDietRecord" data-id="{{item.id}}">删除</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 添加记录按钮 -->
+    <button class="add-btn" bindtap="showAddDialog">+ 添加饮食记录</button>
+
+    <!-- 添加/编辑记录弹窗 -->
+    <view wx:if="{{showAddDialog}}" class="dialog-overlay">
+      <view class="dialog-content">
+        <text class="dialog-title">{{isEdit ? '编辑饮食记录' : '添加饮食记录'}}</text>
+        
+        <view class="form-group">
+          <text class="form-label">食材/菜品名称</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入名称" 
+            value="{{formData.foodName}}"
+            bindinput="onFormInput"
+            data-key="foodName"
+          />
+        </view>
+        
+        <view class="form-group">
+          <text class="form-label">类型</text>
+          <picker mode="selector" range="{{foodTypes}}" value="{{formData.foodTypeIndex}}" bindchange="onFoodTypeChange">
+            <view class="form-picker">
+              {{foodTypes[formData.foodTypeIndex]}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="form-group">
+          <text class="form-label">用餐时段</text>
+          <picker mode="selector" range="{{mealTimes}}" value="{{formData.mealTimeIndex}}" bindchange="onMealTimeChange">
+            <view class="form-picker">
+              {{mealTimes[formData.mealTimeIndex]}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="form-group">
+          <text class="form-label">食用量(g)</text>
+          <input 
+            class="form-input" 
+            type="number" 
+            placeholder="请输入食用量" 
+            value="{{formData.weight}}"
+            bindinput="onFormInput"
+            data-key="weight"
+          />
+        </view>
+        
+        <view class="dialog-buttons">
+          <button class="btn-cancel" bindtap="hideAddDialog">取消</button>
+          <button class="btn-confirm" bindtap="submitDietRecord">确定</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 饮水记录 -->
+  <view wx:if="{{currentTab === 'water'}}" class="water-content">
+    <!-- 饮水卡片 -->
+    <view class="water-card">
+      <view class="water-header">
+        <text class="water-title">今日饮水</text>
+        <text class="water-target">目标：{{dailyTarget}}ml</text>
+      </view>
+      
+      <view class="water-amount">
+        <text class="current-amount">{{currentAmount}}</text>
+        <text class="unit">ml</text>
+      </view>
+      
+      <view class="progress-container">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{progressPercent}}%"></view>
+        </view>
+        <text class="progress-text">{{progressPercent}}%</text>
+      </view>
+      
+      <view class="water-status">
+        <text wx:if="{{progressPercent >= 100}}" class="status-good">🎉 目标达成！</text>
+        <text wx:else class="status-normal">还需喝 {{remainingAmount}}ml</text>
+      </view>
+    </view>
+
+    <!-- 快速添加 -->
+    <view class="quick-add-section">
+      <view class="section-title">快速添加</view>
+      <view class="quick-add-grid">
+        <view class="quick-add-item" bindtap="addWater" data-amount="100">
+          <text class="quick-amount">100ml</text>
+          <text class="quick-label">小杯</text>
+        </view>
+        <view class="quick-add-item" bindtap="addWater" data-amount="200">
+          <text class="quick-amount">200ml</text>
+          <text class="quick-label">中杯</text>
+        </view>
+        <view class="quick-add-item" bindtap="addWater" data-amount="300">
+          <text class="quick-amount">300ml</text>
+          <text class="quick-label">大杯</text>
+        </view>
+        <view class="quick-add-item" bindtap="addWater" data-amount="500">
+          <text class="quick-amount">500ml</text>
+          <text class="quick-label">水瓶</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 自定义添加 -->
+    <view class="custom-add-section">
+      <view class="section-title">自定义添加</view>
+      <view class="custom-add-box">
+        <input class="custom-input" type="number" placeholder="输入水量(ml)" value="{{customAmount}}" bindinput="onCustomAmountInput" />
+        <button class="custom-btn" bindtap="addCustomWater">添加</button>
+      </view>
+    </view>
+
+    <!-- 今日记录 -->
+    <view class="history-section">
+      <view class="section-title">今日记录</view>
+      <view wx:if="{{waterRecords.length === 0}}" class="empty-history">
+        <text>暂无饮水记录</text>
+      </view>
+      <view wx:else class="history-list">
+        <view wx:for="{{waterRecords}}" wx:key="index" class="history-item">
+          <view class="history-info">
+            <text class="history-amount">+{{item.amount}}ml</text>
+            <text class="history-time">{{item.time}}</text>
+          </view>
+          <button class="delete-btn" bindtap="deleteWaterRecord" data-index="{{index}}">删除</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 饮水小贴士 -->
+    <view class="tips-section">
+      <view class="section-title">饮水小贴士</view>
+      <view class="tips-content">
+        <text>💧 每天至少喝8杯水</text>
+        <text>💧 起床后喝一杯温水</text>
+        <text>💧 运动前后及时补水</text>
+        <text>💧 不要等到口渴才喝水</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 运动记录 -->
+  <view wx:if="{{currentTab === 'exercise'}}" class="exercise-content">
+    <view class="stats-card-exercise">
+      <view class="stats-header">
+        <text class="stats-title">今日运动</text>
+      </view>
+      
+      <view class="stats-grid">
+        <view class="stat-item">
+          <text class="stat-value">{{todayCalories}}</text>
+          <text class="stat-label">消耗(大卡)</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{todayDuration}}</text>
+          <text class="stat-label">时长(分钟)</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{todayCount}}</text>
+          <text class="stat-label">运动次数</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="quick-exercise-section">
+      <view class="section-title">快速添加</view>
+      <view class="exercise-grid">
+        <view wx:for="{{exerciseTypes}}" wx:key="id" class="exercise-item" bindtap="addExercise" data-type="{{item}}">
+          <view class="exercise-icon" style="background: {{item.color}}">
+            <text>{{item.icon}}</text>
+          </view>
+          <text class="exercise-name">{{item.name}}</text>
+          <text class="exercise-calories">{{item.calories}}大卡/小时</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="custom-exercise-section">
+      <view class="section-title">自定义运动</view>
+      <view class="custom-form">
+        <view class="form-item">
+          <text class="form-label">运动名称</text>
+          <input class="form-input" placeholder="请输入运动名称" value="{{customName}}" bindinput="onCustomNameInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">运动时长(分钟)</text>
+          <input class="form-input" type="number" placeholder="请输入运动时长" value="{{customDuration}}" bindinput="onCustomDurationInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">消耗热量(大卡/小时)</text>
+          <input class="form-input" type="number" placeholder="请输入热量消耗" value="{{customCalories}}" bindinput="onCustomCaloriesInput" />
+        </view>
+        <button class="add-btn" bindtap="addCustomExercise">添加运动</button>
+      </view>
+    </view>
+
+    <view class="history-section">
+      <view class="section-title">今日记录</view>
+      <view wx:if="{{exerciseRecords.length === 0}}" class="empty-history">
+        <text>暂无运动记录</text>
+      </view>
+      <view wx:else class="history-list">
+        <view wx:for="{{exerciseRecords}}" wx:key="index" class="history-item">
+          <view class="history-info">
+            <view class="history-icon" style="background: {{item.color}}">
+              <text>{{item.icon}}</text>
+            </view>
+            <view class="history-detail">
+              <text class="history-name">{{item.name}}</text>
+              <view class="history-meta">
+                <text>{{item.duration}}分钟</text>
+                <text>·</text>
+                <text>{{item.totalCalories}}大卡</text>
+              </view>
+            </view>
+          </view>
+          <view class="history-right">
+            <text class="history-time">{{item.time}}</text>
+            <button class="delete-btn" bindtap="deleteExerciseRecord" data-index="{{index}}">删除</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="tips-section">
+      <view class="section-title">运动小贴士</view>
+      <view class="tips-content">
+        <text>🏃 运动前做好热身准备</text>
+        <text>💪 循序渐进，避免运动损伤</text>
+        <text>💧 运动中及时补充水分</text>
+        <text>😴 运动后注意休息恢复</text>
+      </view>
+    </view>
+  </view>
+</view>

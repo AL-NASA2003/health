@@ -1,0 +1,123 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-container">
+    <loading>加载中...</loading>
+  </view>
+
+  <view wx:if="{{!loading}}" class="handbook-list">
+    <view wx:if="{{handbookList.length === 0}}" class="empty-container">
+      <image src="/images/icon/handbook.png" class="empty-icon" mode="aspectFit" />
+      <text class="empty-text">暂无手账记录\n点击右下角按钮开始创作</text>
+    </view>
+    <view wx:for="{{handbookList}}" wx:key="id" class="handbook-item">
+      <view class="handbook-header">
+        <text class="handbook-title">{{item.title}}</text>
+        <view class="handbook-actions">
+          <button bindtap="likeHandbook" data-id="{{item.id}}" data-liked="{{item.is_liked}}" class="action-btn">
+            <image src="{{item.is_liked ? '/images/icon/like.png' : '/images/icon/like.png'}}" class="action-icon" />
+          </button>
+          <button bindtap="collectHandbook" data-id="{{item.id}}" data-collected="{{item.is_collected}}" class="action-btn">
+            <image src="{{item.is_collected ? '/images/icon/collect.png' : '/images/icon/collect.png'}}" class="action-icon" />
+          </button>
+          <button bindtap="editHandbook" data-item="{{item}}" class="action-btn">
+            <text class="action-text">编辑</text>
+          </button>
+          <button bindtap="deleteHandbook" data-id="{{item.id}}" class="action-btn">
+            <text class="action-text">删除</text>
+          </button>
+        </view>
+      </view>
+      <image wx:if="{{item.image}}" src="{{item.image}}" class="handbook-image" mode="aspectFill" />
+      <text class="handbook-content">{{item.content}}</text>
+      <view class="handbook-footer">
+        <text class="handbook-time">{{item.create_time}}</text>
+        <view class="handbook-stats">
+          <view class="stat-item">
+            <image src="/images/icon/like.png" class="stat-icon" />
+            <text>{{item.like_count || 0}}</text>
+          </view>
+          <view class="stat-item">
+            <image src="/images/icon/collect.png" class="stat-icon" />
+            <text>{{item.collect_count || 0}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button bindtap="showAddDialog" class="add-btn">
+    <text class="add-btn-text">+</text>
+  </button>
+
+  <view wx:if="{{showDialog}}" class="dialog-overlay">
+    <view class="dialog-content">
+      <view class="dialog-header">
+        <text class="dialog-title">{{isEdit ? '编辑手账' : '添加手账'}}</text>
+        <button bindtap="hideDialog" class="dialog-close">×</button>
+      </view>
+      <view class="dialog-body">
+        <view class="form-item">
+          <text class="form-label">标题</text>
+          <input bindinput="onFormInput" data-key="title" value="{{formData.title}}" placeholder="给手账起个好听的名字" class="form-input" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">内容</text>
+          <textarea bindinput="onFormInput" data-key="content" value="{{formData.content}}" placeholder="记录今天的美好时光..." class="form-textarea" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">图片</text>
+          <view wx:if="{{formData.image}}" class="image-preview">
+            <image src="{{formData.image}}" class="preview-image" mode="aspectFill" />
+            <button bindtap="clearImage" class="clear-image-btn">×</button>
+          </view>
+          <view class="image-actions">
+            <button bindtap="chooseImage" class="image-btn">📷 选择图片</button>
+            <button bindtap="showAIGenerateDialog" class="image-btn ai-generate-btn">🎨 AI生成</button>
+            <button wx:if="{{formData.image}}" bindtap="removeBg" class="image-btn bg-remove-btn">✂️ 一键抠图</button>
+          </view>
+          <input bindinput="onFormInput" data-key="image" value="{{formData.image}}" placeholder="或输入图片链接" class="form-input" />
+        </view>
+      </view>
+      <view class="dialog-footer">
+        <button bindtap="hideDialog" class="dialog-btn cancel-btn">取消</button>
+        <button bindtap="submitForm" class="dialog-btn confirm-btn">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showAIDialog}}" class="dialog-overlay">
+    <view class="dialog-content ai-dialog">
+      <view class="dialog-header">
+        <text class="dialog-title">🎨 智谱AI - 图像生成</text>
+        <button bindtap="hideAIGenerateDialog" class="dialog-close">×</button>
+      </view>
+      <view class="dialog-body">
+        <view class="form-item">
+          <text class="form-label">图像描述</text>
+          <textarea bindinput="onAIPromptInput" value="{{aiPrompt}}" placeholder="例如：一盘美味的红烧肉，香气扑鼻，色泽诱人" class="form-textarea ai-textarea" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">图像尺寸</text>
+          <picker mode="selector" range="{{aiSizes}}" value="{{aiSizeIndex}}" bindchange="onAISizeChange">
+            <view class="form-picker">
+              {{aiSizes[aiSizeIndex]}}
+            </view>
+          </picker>
+        </view>
+        <view wx:if="{{generatingImage}}" class="generating-tip">
+          <loading>正在快速生成图像...</loading>
+        </view>
+        <view wx:if="{{generatedImage}}" class="generated-preview">
+          <text class="generated-label">生成结果：</text>
+          <image src="{{generatedImage}}" class="generated-image" mode="aspectFill" />
+          <button bindtap="useGeneratedImage" class="use-image-btn">✨ 使用此图像</button>
+        </view>
+      </view>
+      <view class="dialog-footer">
+        <button bindtap="hideAIGenerateDialog" class="dialog-btn cancel-btn">取消</button>
+        <button bindtap="generateAIImage" class="dialog-btn confirm-btn" disabled="{{generatingImage}}">
+          {{generatingImage ? '生成中...' : '生成图像'}}
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

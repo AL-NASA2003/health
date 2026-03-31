@@ -1,0 +1,293 @@
+.container {
+  padding: 20rpx;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.date-header {
+  text-align: center;
+  padding: 20rpx 0;
+}
+
+.date-text {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 健康分数卡片 */
+.score-card {
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+  border-radius: 30rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+}
+
+.score-circle {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-number {
+  font-size: 56rpx;
+  color: #fff;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 8rpx;
+}
+
+.score-desc text {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 健康指标卡片 */
+.health-metrics {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.metric-item {
+  flex: 1;
+  background: #f8f9fa;
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metric-value {
+  font-size: 36rpx;
+  color: #07c160;
+  font-weight: bold;
+}
+
+.metric-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.metric-status, .metric-unit {
+  font-size: 22rpx;
+  color: #666;
+  margin-top: 4rpx;
+}
+
+/* 快捷入口 */
+.quick-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.action-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.action-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.08);
+}
+
+.action-icon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.action-status {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.status-value {
+  font-size: 32rpx;
+  color: #07c160;
+  font-weight: bold;
+}
+
+.status-unit {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 热量平衡 */
+.calorie-balance {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 20rpx;
+}
+
+.balance-items {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+}
+
+.balance-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.balance-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.balance-value {
+  font-size: 36rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.balance-value.intake {
+  color: #ff6b6b;
+}
+
+.balance-value.burn {
+  color: #4ecdc4;
+}
+
+.balance-value.over {
+  color: #ff6b6b;
+}
+
+.balance-unit {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.balance-divider {
+  font-size: 36rpx;
+  color: #ccc;
+  font-weight: bold;
+}
+
+.goal-info {
+  text-align: center;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.goal-info text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 记录摘要 */
+.records-summary {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.record-group {
+  margin-bottom: 30rpx;
+}
+
+.record-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.group-title text:first-child {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.group-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.record-list {
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #e8e8e8;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.record-value {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.no-records {
+  text-align: center;
+  padding: 60rpx 0;
+}
+
+.no-records text {
+  font-size: 28rpx;
+  color: #999;
+}

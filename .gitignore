@@ -1,0 +1,57 @@
+# 忽略数据库文件
+*.db
+*.sqlite
+*.sql
+
+# 忽略日志文件
+*.log
+
+# 忽略临时文件和缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 忽略 IDE 相关文件
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 忽略环境文件
+.env
+venv/
+.venv/
+env/
+
+# 忽略项目配置文件
+project.config.json
+project.private.config.json
+
+# 忽略性能测试结果
+performance_*.png
+performance_test_results.json
+
+# 忽略爬虫生成的文件
+xhs_*.xlsx
+food_statistics.xlsx
+
+# 忽略实例文件
+instance/
+
+# 忽略密钥文件
+key/
+
+# 忽略测试文件
+tests/__pycache__/
+
+# 忽略临时测试文件
+test_*.py
+check_*.py
+
+# 忽略其他临时文件
+*.tmp
+*.temp
+
+# 忽略文档文件
+*.md
+*.docx

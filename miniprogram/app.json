@@ -1,0 +1,75 @@
+{
+  "pages": [
+    "pages/splash/splash",
+    "pages/login/login",
+    "pages/register/register",
+    "pages/index/index",
+    "pages/diet/diet",
+    "pages/health/health",
+    "pages/health-summary/health-summary",
+    "pages/records/records",
+    "pages/recipe-calendar/recipe-calendar",
+    "pages/ingredient/ingredient",
+    "pages/recipe/recipe",
+    "pages/recipe-detail/recipe-detail",
+    "pages/hotfood/hotfood",
+    "pages/handbook/handbook",
+    "pages/forum/forum",
+    "pages/user/user",
+    "pages/user/edit-profile/edit-profile",
+    "pages/webview/webview"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#07c160",
+    "navigationBarTitleText": "健康饮食助手",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#666",
+    "selectedColor": "#4CAF50",
+    "backgroundColor": "#fff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "/images/tab/home.png",
+        "selectedIconPath": "/images/tab/home_active.png"
+      },
+      {
+        "pagePath": "pages/records/records",
+        "text": "我的记录",
+        "iconPath": "/images/tab/diet.png",
+        "selectedIconPath": "/images/tab/diet_active.png"
+      },
+      {
+        "pagePath": "pages/recipe/recipe",
+        "text": "食谱推荐",
+        "iconPath": "/images/tab/recipe.png",
+        "selectedIconPath": "/images/tab/recipe_active.png"
+      },
+      {
+        "pagePath": "pages/hotfood/hotfood",
+        "text": "热点美食",
+        "iconPath": "/images/tab/hot.png",
+        "selectedIconPath": "/images/tab/hot_active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true,
+  "permission": {
+    "scope.userInfo": {
+      "desc": "用于完善用户资料"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "usingComponents": {}
+}

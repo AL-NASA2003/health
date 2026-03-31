@@ -1,0 +1,647 @@
+/**
+ * 首页样式
+ */
+
+.index-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 用户信息区域 */
+.user-section {
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  padding: 40rpx;
+  color: #ffffff;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  margin-right: 30rpx;
+}
+
+.user-detail {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 6rpx;
+}
+
+.user-id {
+  font-size: 24rpx;
+  opacity: 0.8;
+  margin-bottom: 6rpx;
+}
+
+.user-target {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.user-section {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-section:active {
+  opacity: 0.9;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 今日统计卡片 */
+.stats-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: -40rpx 30rpx 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.stats-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.stats-date {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+/* 卡路里进度 */
+.calorie-progress {
+  margin-bottom: 40rpx;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20rpx;
+}
+
+.current-calories {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #07c160;
+}
+
+.calories-unit {
+  font-size: 28rpx;
+  color: #666666;
+  margin-left: 10rpx;
+}
+
+.target-calories {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.progress-bar {
+  height: 16rpx;
+  background: #f0f0f0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #07c160, #06ad56);
+  border-radius: 8rpx;
+  transition: width 0.5s ease;
+}
+
+/* 营养素统计 */
+.nutrients-grid {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.nutrient-item {
+  text-align: center;
+}
+
+.nutrient-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.nutrient-label {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 功能入口 */
+.function-section {
+  padding: 0 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.function-grid {
+  display: flex;
+  flex-wrap: wrap;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 20rpx 0;
+}
+
+.function-item {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0;
+  transition: all 0.3s ease;
+}
+
+.function-item:active {
+  transform: translateY(4rpx);
+  opacity: 0.8;
+}
+
+.function-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+
+.function-icon.diet {
+  background: rgba(7, 193, 96, 0.1);
+}
+
+.function-icon.ingredient {
+  background: rgba(255, 149, 0, 0.1);
+}
+
+.function-icon.recipe {
+  background: rgba(16, 174, 255, 0.1);
+}
+
+.function-icon.hot {
+  background: rgba(250, 81, 81, 0.1);
+}
+
+.function-icon.water {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.function-icon.exercise {
+  background: rgba(240, 147, 251, 0.1);
+}
+
+.function-icon.health {
+  background: rgba(67, 233, 123, 0.1);
+}
+
+.function-icon.calendar {
+  background: rgba(250, 147, 251, 0.1);
+}
+
+.function-name {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+/* 内容卡片 */
+.content-section {
+  padding: 0 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.section-more {
+  font-size: 26rpx;
+  color: #999999;
+  display: flex;
+  align-items: center;
+}
+
+.arrow-icon {
+  width: 24rpx;
+  height: 24rpx;
+  margin-left: 8rpx;
+}
+
+/* 饮食记录列表 */
+.diet-list {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 0 30rpx;
+}
+
+.diet-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.diet-item:last-child {
+  border-bottom: none;
+}
+
+.meal-type-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+}
+
+.meal-type-icon.breakfast {
+  background: #ff9500;
+}
+
+.meal-type-icon.lunch {
+  background: #07c160;
+}
+
+.meal-type-icon.dinner {
+  background: #10aeff;
+}
+
+.meal-type-icon.snack {
+  background: #fa5151;
+}
+
+.diet-info {
+  flex: 1;
+}
+
+.diet-name {
+  font-size: 30rpx;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.diet-time {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.diet-calories {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #07c160;
+}
+
+/* 食谱推荐 */
+.recipe-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10rpx;
+}
+
+.recipe-item {
+  width: calc(50% - 20rpx);
+  margin: 10rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.recipe-item:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 1rpx 6rpx rgba(0, 0, 0, 0.03);
+}
+
+.recipe-image {
+  width: 100%;
+  height: 200rpx;
+  background: #f5f5f5;
+}
+
+.recipe-content {
+  padding: 20rpx;
+}
+
+.recipe-name {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recipe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 12rpx;
+}
+
+.recipe-tag {
+  font-size: 22rpx;
+  color: #07c160;
+  background: rgba(7, 193, 96, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-right: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.recipe-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recipe-calories {
+  font-size: 24rpx;
+  color: #ff9500;
+}
+
+.recipe-time {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+/* 热点美食 */
+.hotfood-list {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 0 30rpx;
+}
+
+.hotfood-item {
+  display: flex;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.hotfood-item:active {
+  background-color: rgba(7, 193, 96, 0.05);
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+
+.hotfood-item:last-child {
+  border-bottom: none;
+}
+
+.hotfood-image {
+  width: 180rpx;
+  height: 140rpx;
+  border-radius: 12rpx;
+  background: #f5f5f5;
+  margin-right: 20rpx;
+}
+
+.hotfood-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hotfood-title {
+  font-size: 30rpx;
+  color: #333333;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.hotfood-tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.hotfood-tag {
+  font-size: 22rpx;
+  color: #fa5151;
+  background: rgba(250, 81, 81, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-right: 10rpx;
+}
+
+.hotfood-stats {
+  display: flex;
+  align-items: center;
+}
+
+.hotfood-likes {
+  font-size: 24rpx;
+  color: #999999;
+  margin-right: 20rpx;
+}
+
+.hotfood-source {
+  font-size: 22rpx;
+  color: #07c160;
+  background: rgba(7, 193, 96, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+/* 添加按钮 */
+.add-btn {
+  position: fixed;
+  right: 40rpx;
+  bottom: 140rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.4);
+  z-index: 100;
+}
+
+.add-btn:active {
+  transform: scale(0.95);
+}
+
+.add-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+/* 加载状态 */
+.loading-section {
+  display: flex;
+  justify-content: center;
+  padding: 60rpx;
+}
+
+/* 空状态 */
+.empty-section {
+  text-align: center;
+  padding: 60rpx;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* 骨架屏样式 */
+.skeleton-container {
+  padding: 0 30rpx;
+}
+
+.skeleton-user-section {
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  padding: 40rpx;
+  border-radius: 20rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.skeleton-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-right: 30rpx;
+}
+
+.skeleton-user-info {
+  flex: 1;
+}
+
+.skeleton-line {
+  height: 28rpx;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.half {
+  width: 50%;
+}
+
+.skeleton-stats-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.skeleton-progress-bar {
+  height: 16rpx;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8rpx;
+  margin: 20rpx 0;
+}
+
+.skeleton-nutrients {
+  display: flex;
+  justify-content: space-around;
+}
+
+.skeleton-circle {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-section {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.skeleton-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.skeleton-rect {
+  width: calc(50% - 10rpx);
+  height: 200rpx;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

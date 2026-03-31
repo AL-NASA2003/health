@@ -1,0 +1,60 @@
+<view class="calendar-container">
+  <view class="calendar-header">
+    <view class="month-nav">
+      <view class="nav-btn" bindtap="prevMonth">‹</view>
+      <view class="month-title">{{currentYear}}年{{currentMonth}}月</view>
+      <view class="nav-btn" bindtap="nextMonth">›</view>
+    </view>
+  </view>
+
+  <view class="week-days">
+    <view class="week-day" wx:for="{{weekDays}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <view class="calendar-days">
+    <view wx:for="{{calendarDays}}" wx:key="index" class="calendar-day {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}}" bindtap="selectDay" data-date="{{item.date}}">
+      <view class="day-number">{{item.day}}</view>
+      <view wx:if="{{item.hasRecipe}}" class="recipe-dot"></view>
+    </view>
+  </view>
+
+  <view wx:if="{{selectedDate}}" class="selected-date-section">
+    <view class="section-title">{{selectedDate}}的食谱</view>
+    <view wx:if="{{dayRecipes.length === 0}}" class="empty-recipes">
+      <text>暂无安排的食谱</text>
+      <button class="add-recipe-btn" bindtap="addRecipe">+ 添加食谱</button>
+    </view>
+    <view wx:else class="day-recipes">
+      <view wx:for="{{dayRecipes}}" wx:key="id}}" class="day-recipe-item">
+        <view class="recipe-info">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-calories">{{item.calories}}大卡</text>
+        </view>
+        <view class="recipe-actions">
+          <button class="action-btn view">查看</button>
+          <button class="action-btn delete">删除</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="recommend-section">
+    <view class="section-title">今日推荐</view>
+    <view wx:if="{{loadingRecommend}}" class="loading">
+      <text>加载中...</text>
+    </view>
+    <view wx:else class="recommend-list">
+      <view wx:for="{{recommendRecipes}}" wx:key="id}}" class="recommend-item" bindtap="viewRecipe" data-id="{{item.id}}">
+        <view class="recommend-image"></view>
+        <view class="recommend-info">
+          <text class="recommend-name">{{item.recipe_name}}</text>
+          <view class="recommend-meta">
+            <text>{{item.calorie}}大卡</text>
+            <text>{{item.cooking_time}}分钟</text>
+          </view>
+        </view>
+        <button class="add-to-calendar" bindtap="addToCalendar" data-recipe="{{item}}" catchtap="true}}">加入日历</button>
+      </view>
+    </view>
+  </view>
+</view>

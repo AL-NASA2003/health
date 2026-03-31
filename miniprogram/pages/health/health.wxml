@@ -1,0 +1,93 @@
+<view class="health-container">
+  <view class="input-section">
+    <view class="section-title">基本信息</view>
+    <view class="form-grid">
+      <view class="form-item">
+        <text class="form-label">身高(cm)</text>
+        <input class="form-input" type="number" placeholder="请输入身高" value="{{height}}" bindinput="onHeightInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">体重(kg)</text>
+        <input class="form-input" type="number" placeholder="请输入体重" value="{{weight}}" bindinput="onWeightInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">年龄</text>
+        <input class="form-input" type="number" placeholder="请输入年龄" value="{{age}}" bindinput="onAgeInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">性别</text>
+        <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+          <view class="form-picker">{{genderOptions[genderIndex]}}</view>
+        </picker>
+      </view>
+    </view>
+    <button class="calculate-btn" bindtap="calculateHealth">计算健康指数</button>
+  </view>
+
+  <view wx:if="{{showResult}}" class="result-section">
+    <view class="result-card">
+      <view class="result-header">
+        <text class="result-title">您的健康指数</text>
+      </view>
+      
+      <view class="bmi-section">
+        <view class="bmi-value">{{bmi}}</view>
+        <view class="bmi-label">BMI指数</view>
+        <view class="bmi-status {{bmiStatusClass}}">{{bmiStatus}}</view>
+      </view>
+      
+      <view class="bmi-scale">
+        <view class="scale-bar">
+          <view class="scale-fill" style="width: {{bmiPercent}}%"></view>
+        </view>
+        <view class="scale-labels">
+          <text>偏瘦</text>
+          <text>正常</text>
+          <text>偏胖</text>
+          <text>肥胖</text>
+        </view>
+      </view>
+      
+      <view class="metrics-grid">
+        <view class="metric-item">
+          <view class="metric-value">{{bmr}}</view>
+          <view class="metric-label">基础代谢(大卡)</view>
+        </view>
+        <view class="metric-item">
+          <view class="metric-value">{{idealWeight}}</view>
+          <view class="metric-label">理想体重(kg)</view>
+        </view>
+        <view class="metric-item">
+          <view class="metric-value">{{dailyCalories}}</view>
+          <view class="metric-label">每日推荐(大卡)</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips-section">
+    <view class="section-title">健康建议</view>
+    <view class="tips-content">
+      <text>📊 BMI = 体重(kg) ÷ 身高²(m²)</text>
+      <text>🎯 正常BMI范围：18.5 - 23.9</text>
+      <text>💡 基础代谢是人体维持生命所需的最低能量</text>
+      <text>🏃 每日热量摄入需结合活动量调整</text>
+    </view>
+  </view>
+
+  <view class="history-section">
+    <view class="section-title">历史记录</view>
+    <view wx:if="{{historyList.length === 0}}" class="empty-history">
+      <text>暂无历史记录</text>
+    </view>
+    <view wx:else class="history-list">
+      <view wx:for="{{historyList}}" wx:key="index" class="history-item">
+        <view class="history-info">
+          <text class="history-date">{{item.date}}</text>
+          <text class="history-bmi">BMI: {{item.bmi}}</text>
+        </view>
+        <text class="history-status {{item.statusClass}}">{{item.status}}</text>
+      </view>
+    </view>
+  </view>
+</view>

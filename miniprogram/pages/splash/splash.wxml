@@ -1,0 +1,42 @@
+<view class="container">
+  <!-- 宣传海报 -->
+  <view class="poster-section">
+    <view class="poster">
+      <text class="poster-icon">🥗</text>
+      <text class="poster-title">健康饮食助手</text>
+      <text class="poster-slogan">科学饮食，健康生活</text>
+      <text class="poster-desc">为您提供个性化的饮食推荐和营养管理</text>
+    </view>
+  </view>
+
+  <!-- 功能介绍 -->
+  <view class="features-section">
+    <view class="feature-item">
+      <text class="feature-icon">📊</text>
+      <text class="feature-text">营养分析</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🍎</text>
+      <text class="feature-text">食谱推荐</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">📝</text>
+      <text class="feature-text">饮食记录</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🔥</text>
+      <text class="feature-text">热点美食</text>
+    </view>
+  </view>
+
+  <!-- 登录注册按钮 -->
+  <view class="action-section">
+    <button class="login-btn" bindtap="goToLogin">立即登录</button>
+    <button class="register-btn" bindtap="goToRegister">新用户注册</button>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer">
+    <text class="footer-text">© 2026 健康饮食助手</text>
+  </view>
+</view>

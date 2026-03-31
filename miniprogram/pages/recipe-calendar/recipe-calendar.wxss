@@ -1,0 +1,258 @@
+.calendar-container {
+  padding: 20rpx;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.calendar-header {
+  background: white;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #666;
+}
+
+.month-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: white;
+  border-radius: 16rpx 16rpx 0 0;
+  padding: 20rpx 0;
+  margin-bottom: 2rpx;
+}
+
+.week-day {
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: white;
+  border-radius: 0 0 16rpx 16rpx;
+  padding: 10rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx;
+  position: relative;
+}
+
+.calendar-day.empty {
+  visibility: hidden;
+}
+
+.calendar-day.today .day-number {
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  color: white;
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day.selected .day-number {
+  background: #e8f5e9;
+  color: #07c160;
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.day-number {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.recipe-dot {
+  position: absolute;
+  bottom: 15rpx;
+  width: 10rpx;
+  height: 10rpx;
+  background: #ff6b6b;
+  border-radius: 50%;
+}
+
+.selected-date-section,
+.recommend-section {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.empty-recipes {
+  text-align: center;
+  padding: 60rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.empty-recipes text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.add-recipe-btn {
+  padding: 15rpx 40rpx;
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+}
+
+.day-recipes {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.day-recipe-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.recipe-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.recipe-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.recipe-calories {
+  font-size: 24rpx;
+  color: #07c160;
+}
+
+.recipe-actions {
+  display: flex;
+  gap: 10rpx;
+}
+
+.action-btn {
+  padding: 10rpx 20rpx;
+  border: none;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+
+.action-btn.view {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.action-btn.delete {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.loading {
+  text-align: center;
+  padding: 60rpx;
+  color: #999;
+}
+
+.recommend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.recommend-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.recommend-image {
+  width: 120rpx;
+  height: 120rpx;
+  background: #e0e0e0;
+  border-radius: 12rpx;
+  margin-right: 20rpx;
+}
+
+.recommend-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.recommend-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.recommend-meta {
+  display: flex;
+  gap: 20rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.add-to-calendar {
+  padding: 10rpx 20rpx;
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}

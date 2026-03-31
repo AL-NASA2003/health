@@ -1,0 +1,149 @@
+<view class="index-container">
+  <!-- 骨架屏 -->
+  <view wx:if="{{loading}}" class="skeleton-container">
+    <view class="skeleton-user-section">
+      <view class="skeleton-avatar"></view>
+      <view class="skeleton-user-info">
+        <view class="skeleton-line"></view>
+        <view class="skeleton-line short"></view>
+        <view class="skeleton-line short"></view>
+      </view>
+    </view>
+    <view class="skeleton-stats-card">
+      <view class="skeleton-line"></view>
+      <view class="skeleton-progress-bar"></view>
+      <view class="skeleton-nutrients">
+        <view class="skeleton-circle"></view>
+        <view class="skeleton-circle"></view>
+        <view class="skeleton-circle"></view>
+      </view>
+    </view>
+    <view class="skeleton-section">
+      <view class="skeleton-line half"></view>
+      <view class="skeleton-grid">
+        <view class="skeleton-rect"></view>
+        <view class="skeleton-rect"></view>
+        <view class="skeleton-rect"></view>
+        <view class="skeleton-rect"></view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 实际内容 -->
+  <view wx:else>
+    <!-- 用户信息区域 -->
+    <view class="user-section" bindtap="goToUserDetail">
+      <view class="user-info">
+        <image class="user-avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}"></image>
+        <view class="user-detail">
+          <view class="user-name">{{userInfo.nickname || '未设置昵称'}}</view>
+          <view class="user-id">ID: {{userInfo.id ? userInfo.id.toString().padStart(7, '0') : '0000000'}}</view>
+          <view class="user-target">健康目标：{{userInfo.health_goal || '未设置'}}</view>
+        </view>
+        <image class="arrow-icon" src="/images/icon/arrow.png"></image>
+      </view>
+    </view>
+
+    <!-- 今日统计卡片 -->
+    <view class="stats-card">
+      <view class="stats-header">
+        <view class="stats-title">今日饮食统计</view>
+        <view class="stats-date">{{currentDate}}</view>
+      </view>
+      
+      <!-- 卡路里进度 -->
+      <view class="calorie-progress">
+        <view class="progress-info">
+          <view>
+            <text class="current-calories">{{dietStats.calorie || 0}}</text>
+            <text class="calories-unit">大卡</text>
+          </view>
+          <view class="target-calories">目标：{{userInfo.daily_calorie || 2000}}大卡</view>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{(dietStats.calorie || 0) / (userInfo.daily_calorie || 2000) * 100}}%"></view>
+        </view>
+      </view>
+      
+      <!-- 营养素统计 -->
+      <view class="nutrients-grid">
+        <view class="nutrient-item">
+          <view class="nutrient-value">{{dietStats.protein || 0}}</view>
+          <view class="nutrient-label">蛋白质 (g)</view>
+        </view>
+        <view class="nutrient-item">
+          <view class="nutrient-value">{{dietStats.carb || 0}}</view>
+          <view class="nutrient-label">碳水 (g)</view>
+        </view>
+        <view class="nutrient-item">
+          <view class="nutrient-value">{{dietStats.fat || 0}}</view>
+          <view class="nutrient-label">脂肪 (g)</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 功能入口 -->
+    <view class="function-section">
+      <view class="section-header">
+        <view class="section-title">功能入口</view>
+      </view>
+      <view class="function-grid">
+        <view class="function-item" bindtap="goToRecords">
+          <view class="function-icon diet">
+            <text style="font-size: 40rpx;">📝</text>
+          </view>
+          <view class="function-name">我的记录</view>
+        </view>
+        <view class="function-item" bindtap="goToHealth">
+          <view class="function-icon health">
+            <text style="font-size: 40rpx;">📊</text>
+          </view>
+          <view class="function-name">健康指数</view>
+        </view>
+        <view class="function-item" bindtap="goToRecipeCalendar">
+          <view class="function-icon calendar">
+            <text style="font-size: 40rpx;">📅</text>
+          </view>
+          <view class="function-name">食谱日历</view>
+        </view>
+        <view class="function-item" bindtap="goToIngredient">
+          <view class="function-icon ingredient">
+            <text style="font-size: 40rpx;">🥬</text>
+          </view>
+          <view class="function-name">食材管理</view>
+        </view>
+        <view class="function-item" bindtap="goToRecipe">
+          <view class="function-icon recipe">
+            <text style="font-size: 40rpx;">🍳</text>
+          </view>
+          <view class="function-name">食谱推荐</view>
+        </view>
+        <view class="function-item" bindtap="goToHotFood">
+          <view class="function-icon hot">
+            <text style="font-size: 40rpx;">🔥</text>
+          </view>
+          <view class="function-name">热点美食</view>
+        </view>
+        <view class="function-item" bindtap="goToForum">
+          <view class="function-icon forum">
+            <text style="font-size: 40rpx;">💬</text>
+          </view>
+          <view class="function-name">美食论坛</view>
+        </view>
+        <view class="function-item" bindtap="goToHandbook">
+          <view class="function-icon handbook">
+            <text style="font-size: 40rpx;">📚</text>
+          </view>
+          <view class="function-name">饮食手册</view>
+        </view>
+      </view>
+    </view>
+
+
+
+    <!-- 添加按钮 -->
+    <view class="add-btn" bindtap="goToAddDiet">
+      <image class="add-icon" src="/images/icon/like.png"></image>
+    </view>
+  </view>
+</view>

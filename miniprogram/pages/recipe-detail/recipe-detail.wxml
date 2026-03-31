@@ -1,0 +1,73 @@
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <loading>加载中...</loading>
+  </view>
+
+  <!-- 食谱详情 -->
+  <view wx:if="{{!loading && recipe}}" class="recipe-detail">
+    <!-- 食谱头部信息 -->
+    <view class="recipe-header">
+      <text class="recipe-name">{{recipe.recipe_name}}</text>
+      <view class="recipe-meta">
+        <text class="recipe-category">{{recipe.cook_type}}</text>
+        <text class="recipe-calories">{{recipe.calorie}} 卡路里</text>
+      </view>
+      <image wx:if="{{recipe.image}}" src="{{recipe.image}}" class="recipe-image" />
+    </view>
+
+    <!-- 标签切换 -->
+    <view class="tab-container">
+      <view bindtap="switchTab" data-tab="steps" class="tab-item {{activeTab === 'steps' ? 'active' : ''}}">
+        <text>制作步骤</text>
+      </view>
+      <view bindtap="switchTab" data-tab="video" class="tab-item {{activeTab === 'video' ? 'active' : ''}}">
+        <text>视频教程</text>
+      </view>
+    </view>
+
+    <!-- 制作步骤 -->
+    <view wx:if="{{activeTab === 'steps'}}" class="steps-container">
+      <view wx:for="{{recipe.steps || []}}" wx:key="index" class="step-item">
+        <view class="step-number">{{index + 1}}</view>
+        <view class="step-content">
+          <text class="step-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 视频教程 - 直接跳转到小红书搜索 -->
+    <view wx:if="{{activeTab === 'video'}}" class="video-container">
+      <view class="no-video">
+        <text>正在跳转到小红书搜索教程...</text>
+      </view>
+    </view>
+
+    <!-- 营养成分 -->
+    <view class="nutrition-container">
+      <text class="section-title">营养成分</text>
+      <view class="nutrition-list">
+        <view class="nutrition-item">
+          <text class="nutrition-label">蛋白质</text>
+          <text class="nutrition-value">{{recipe.protein || 0}}g</text>
+        </view>
+        <view class="nutrition-item">
+          <text class="nutrition-label">脂肪</text>
+          <text class="nutrition-value">{{recipe.fat || 0}}g</text>
+        </view>
+        <view class="nutrition-item">
+          <text class="nutrition-label">碳水化合物</text>
+          <text class="nutrition-value">{{recipe.carb || 0}}g</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-container">
+      <button bindtap="{{recipe.is_collected ? 'uncollectRecipe' : 'collectRecipe'}}" class="action-btn">
+        <image src="{{recipe.is_collected ? '/images/icon/collect_active.png' : '/images/icon/collect.png'}}" class="action-icon" />
+        <text>{{recipe.is_collected ? '已收藏' : '收藏'}}</text>
+      </button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,61 @@
+<view class="container">
+  <!-- 操作栏 -->
+  <view class="action-bar">
+    <button class="refresh-btn" bindtap="refreshHotFood">
+      🔄 刷新热点
+    </button>
+    <button class="crawl-btn" bindtap="manualCrawl">
+      🕷️ 手动爬取
+    </button>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view wx:if="{{skeletonShow}}" class="skeleton-container">
+    <view class="skeleton-item" wx:for="[1,2,3,4,5]" wx:key="index">
+      <view class="skeleton-rank">
+        <view class="skeleton-rank-num"></view>
+        <view class="skeleton-hot-score"></view>
+      </view>
+      <view class="skeleton-info">
+        <view class="skeleton-title"></view>
+        <view class="skeleton-desc"></view>
+        <view class="skeleton-time"></view>
+      </view>
+      <view class="skeleton-btn"></view>
+    </view>
+  </view>
+
+  <!-- 热点美食列表 -->
+  <view wx:elif="{{loading}}" class="loading">加载中...</view>
+  <view wx:elif="{{hotFoodList.length === 0}}" class="empty">
+    暂无热点美食数据
+  </view>
+  <view wx:else class="hotfood-list">
+    <view class="hotfood-item" wx:for="{{hotFoodList}}" wx:key="id">
+      <!-- 热度排名 -->
+      <view class="rank-item">
+        <view class="rank-num {{index < 3 ? 'top-rank' : ''}}">{{index + 1}}</view>
+        <view class="hot-score">热度：{{item.likes}}</view>
+      </view>
+
+      <!-- 美食信息 -->
+      <view class="food-info">
+        <view class="food-name">{{item.title}}</view>
+        <view class="ingre-list" wx:if="{{item.desc}}">
+          <text class="label">食材：</text>
+          <text class="value">{{item.desc}}</text>
+        </view>
+        <view class="crawl-time">
+          更新时间：{{item.create_time}}
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-btn">
+        <button size="mini" bindtap="openLink" data-link="{{item.link}}">
+          查看原文
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

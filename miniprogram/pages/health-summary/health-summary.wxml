@@ -1,0 +1,122 @@
+<view class="container">
+  <!-- 日期标题 -->
+  <view class="date-header">
+    <text class="date-text">{{currentDate}}</text>
+  </view>
+
+  <!-- 健康分数卡片 -->
+  <view class="score-card" wx:if="{{healthScore > 0}}">
+    <view class="score-circle">
+      <text class="score-number">{{healthScore}}</text>
+      <text class="score-label">健康分数</text>
+    </view>
+    <view class="score-desc">
+      <text>今日健康状况</text>
+    </view>
+  </view>
+
+  <!-- 健康指标卡片 -->
+  <view class="health-metrics" wx:if="{{bmi}}">
+    <view class="metric-item">
+      <text class="metric-value">{{bmi}}</text>
+      <text class="metric-label">BMI</text>
+      <text class="metric-status">{{bmiStatus}}</text>
+    </view>
+    <view class="metric-item">
+      <text class="metric-value">{{bmr}}</text>
+      <text class="metric-label">BMR</text>
+      <text class="metric-unit">大卡/天</text>
+    </view>
+    <view class="metric-item">
+      <text class="metric-value">{{idealWeight}}</text>
+      <text class="metric-label">理想体重</text>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="goToRecords">
+      <view class="action-icon">📝</view>
+      <text class="action-text">我的记录</text>
+      <view class="action-status">
+        <text class="status-value">{{totalCalories}}/{{totalWater}}/{{totalExerciseDuration}}</text>
+        <text class="status-unit">大卡/ml/分钟</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 热量平衡 -->
+  <view class="calorie-balance">
+    <view class="section-title">热量平衡</view>
+    <view class="balance-items">
+      <view class="balance-item">
+        <text class="balance-label">摄入</text>
+        <text class="balance-value intake">{{totalCalories}}</text>
+        <text class="balance-unit">大卡</text>
+      </view>
+      <view class="balance-divider">-</view>
+      <view class="balance-item">
+        <text class="balance-label">消耗</text>
+        <text class="balance-value burn">{{totalExerciseCalories}}</text>
+        <text class="balance-unit">大卡</text>
+      </view>
+      <view class="balance-divider">=</view>
+      <view class="balance-item">
+        <text class="balance-label">净摄入</text>
+        <text class="balance-value {{netCalories > dailyCalorieGoal ? 'over' : ''}}">{{netCalories}}</text>
+        <text class="balance-unit">大卡</text>
+      </view>
+    </view>
+    <view class="goal-info">
+      <text>目标: {{dailyCalorieGoal}} 大卡/天</text>
+    </view>
+  </view>
+
+  <!-- 今日记录摘要 -->
+  <view class="records-summary">
+    <view class="section-title">今日记录</view>
+    
+    <view class="record-group" wx:if="{{dietRecords.length > 0}}">
+      <view class="group-title">
+        <text>饮食记录</text>
+        <text class="group-count">{{dietRecords.length}} 条</text>
+      </view>
+      <view class="record-list">
+        <view class="record-item" wx:for="{{dietRecords}}" wx:key="index" wx:for-item="record">
+          <text class="record-name">{{record.food_name}}</text>
+          <text class="record-value">{{record.calories}} 大卡</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="record-group" wx:if="{{waterRecords.length > 0}}">
+      <view class="group-title">
+        <text>饮水记录</text>
+        <text class="group-count">{{waterRecords.length}} 条</text>
+      </view>
+      <view class="record-list">
+        <view class="record-item" wx:for="{{waterRecords}}" wx:key="index" wx:for-item="record">
+          <text class="record-name">{{record.time}}</text>
+          <text class="record-value">{{record.amount}} ml</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="record-group" wx:if="{{exerciseRecords.length > 0}}">
+      <view class="group-title">
+        <text>运动记录</text>
+        <text class="group-count">{{exerciseRecords.length}} 条</text>
+      </view>
+      <view class="record-list">
+        <view class="record-item" wx:for="{{exerciseRecords}}" wx:key="index" wx:for-item="record">
+          <text class="record-name">{{record.icon}} {{record.name}}</text>
+          <text class="record-value">{{record.duration}}分钟 / {{record.totalCalories}}大卡</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="no-records" wx:if="{{dietRecords.length === 0 && waterRecords.length === 0 && exerciseRecords.length === 0}}">
+      <text>今日暂无记录</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,833 @@
+.container {
+  padding: 0;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  background: #07c160;
+}
+
+.back-btn {
+  color: white;
+  font-size: 40rpx;
+  padding-right: 20rpx;
+}
+
+.header-title {
+  color: white;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.date-section {
+  text-align: center;
+  padding: 30rpx;
+}
+
+.date-text {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: white;
+  margin: 0 20rpx;
+  padding: 30rpx 20rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.stats-header .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-header .stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #07c160;
+  margin-bottom: 8rpx;
+}
+
+.stats-header .stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: #e0e0e0;
+}
+
+.nav-bar {
+  display: flex;
+  background: white;
+  margin: 0 20rpx;
+  border-radius: 16rpx;
+  padding: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.nav-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 10rpx;
+  transition: all 0.3s;
+}
+
+.nav-item.active {
+  background: #07c160;
+  color: white;
+  font-weight: bold;
+}
+
+/* ========== 饮食记录样式 ========== */
+.diet-content {
+  padding: 0 20rpx;
+}
+
+.date-picker {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.date-picker .date-text {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.stats-card {
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  padding: 40rpx;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 4rpx 15rpx rgba(7, 193, 96, 0.3);
+}
+
+.stats-card .stats-label {
+  display: block;
+  font-size: 28rpx;
+  opacity: 0.9;
+  margin-bottom: 10rpx;
+}
+
+.stats-card .stats-value {
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.search-container {
+  margin-bottom: 30rpx;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  height: 80rpx;
+  background: #fff;
+  border-radius: 40rpx;
+  padding: 0 30rpx;
+  font-size: 28rpx;
+  border: 1rpx solid #e0e0e0;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.search-suggest {
+  position: absolute;
+  top: 90rpx;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  z-index: 99;
+}
+
+.suggest-item {
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.suggest-item:last-child {
+  border-bottom: none;
+}
+
+.suggest-name {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.suggest-calorie {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.diet-list {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 0 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 140rpx;
+}
+
+.diet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.diet-item:last-child {
+  border-bottom: none;
+}
+
+.diet-info {
+  flex: 1;
+}
+
+.diet-name {
+  font-size: 30rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.diet-type {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.diet-calories {
+  font-size: 32rpx;
+  color: #07c160;
+  font-weight: bold;
+  min-width: 120rpx;
+  text-align: right;
+}
+
+.diet-actions {
+  display: flex;
+  gap: 10rpx;
+  margin-left: 20rpx;
+}
+
+.action-btn {
+  padding: 10rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  border: none;
+  line-height: 1;
+}
+
+.action-btn.edit {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.action-btn.delete {
+  background-color: #fff1f0;
+  color: #ff4d4f;
+}
+
+.diet-content .add-btn {
+  position: fixed;
+  bottom: 140rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 88rpx;
+  background: #07c160;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  border: none;
+  box-shadow: 0 4rpx 20rpx rgba(7, 193, 96, 0.3);
+}
+
+.diet-content .loading, .diet-content .empty {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 弹窗样式 */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  width: 90%;
+  max-width: 600rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.2);
+}
+
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+.form-picker {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-picker::after {
+  content: '▼';
+  font-size: 20rpx;
+  color: #999;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40rpx;
+}
+
+.btn-cancel, .btn-confirm {
+  width: 48%;
+  height: 80rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+}
+
+.btn-cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.btn-confirm {
+  background-color: #07c160;
+  color: #fff;
+}
+
+/* ========== 饮水记录样式 ========== */
+.water-content {
+  padding: 0 20rpx;
+}
+
+.water-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  color: white;
+}
+
+.water-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.water-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.water-target {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+.water-amount {
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+.current-amount {
+  font-size: 80rpx;
+  font-weight: bold;
+}
+
+.unit {
+  font-size: 28rpx;
+  margin-left: 10rpx;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 16rpx;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fff 0%, #e0e7ff 100%);
+  border-radius: 8rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  min-width: 80rpx;
+  text-align: right;
+}
+
+.water-status {
+  text-align: center;
+  font-size: 28rpx;
+}
+
+.status-good {
+  color: #ffeaa7;
+  font-weight: bold;
+}
+
+.status-normal {
+  opacity: 0.9;
+}
+
+.quick-add-section,
+.custom-add-section,
+.history-section,
+.tips-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.quick-add-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+}
+
+.quick-add-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 10rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  border-radius: 12rpx;
+  transition: transform 0.2s;
+}
+
+.quick-add-item:active {
+  transform: scale(0.95);
+}
+
+.quick-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 8rpx;
+}
+
+.quick-label {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.custom-add-box {
+  display: flex;
+  gap: 20rpx;
+}
+
+.custom-input {
+  flex: 1;
+  padding: 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+}
+
+.custom-btn {
+  width: 150rpx;
+  height: 80rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.history-list {
+  max-height: 500rpx;
+  overflow-y: auto;
+}
+
+.water-content .history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.water-content .history-item:last-child {
+  border-bottom: none;
+}
+
+.water-content .history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.water-content .history-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.water-content .history-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.water-content .delete-btn {
+  padding: 10rpx 25rpx;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+}
+
+.tips-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.tips-content text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* ========== 运动记录样式 ========== */
+.exercise-content {
+  padding: 0 20rpx;
+}
+
+.exercise-content .stats-card-exercise {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  color: white;
+}
+
+.exercise-content .stats-header {
+  margin-bottom: 30rpx;
+  background: transparent;
+  box-shadow: none;
+}
+
+.exercise-content .stats-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.exercise-content .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30rpx;
+}
+
+.exercise-content .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise-content .stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.exercise-content .stat-label {
+  font-size: 22rpx;
+  opacity: 0.9;
+}
+
+.exercise-content .section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.quick-exercise-section,
+.custom-exercise-section,
+.history-section,
+.tips-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+}
+
+.exercise-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25rpx 10rpx;
+  background-color: #f8f9fa;
+  border-radius: 12rpx;
+  transition: transform 0.2s;
+}
+
+.exercise-item:active {
+  transform: scale(0.95);
+}
+
+.exercise-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-bottom: 12rpx;
+}
+
+.exercise-name {
+  font-size: 24rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+  text-align: center;
+}
+
+.exercise-calories {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25rpx;
+}
+
+.exercise-content .form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.exercise-content .form-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.exercise-content .form-input {
+  padding: 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+}
+
+.exercise-content .add-btn {
+  width: 100%;
+  height: 90rpx;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-top: 10rpx;
+}
+
+.exercise-content .empty-history {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.exercise-content .history-list {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.exercise-content .history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.exercise-content .history-item:last-child {
+  border-bottom: none;
+}
+
+.exercise-content .history-info {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  flex: 1;
+}
+
+.exercise-content .history-icon {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.exercise-content .history-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.exercise-content .history-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.exercise-content .history-meta {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.exercise-content .history-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+}
+
+.exercise-content .history-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.exercise-content .delete-btn {
+  padding: 10rpx 25rpx;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+}
+
+.exercise-content .tips-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.exercise-content .tips-content text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}

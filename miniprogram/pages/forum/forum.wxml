@@ -1,0 +1,83 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-container">
+    <loading>加载中...</loading>
+  </view>
+
+  <view wx:if="{{!loading}}" class="post-list">
+    <view wx:if="{{postList.length === 0}}" class="empty-container">
+      <image src="/images/tab/home.png" class="empty-icon" mode="aspectFit" />
+      <text class="empty-text">暂无帖子\n快来发布第一篇帖子吧！</text>
+    </view>
+    <view wx:for="{{postList}}" wx:key="id" class="post-item">
+      <view class="post-header">
+        <text class="post-title">{{item.title}}</text>
+        <view wx:if="{{item.is_top}}" class="top-tag">🔥 置顶</view>
+      </view>
+      <view wx:if="{{item.image}}" class="post-image-wrapper">
+        <image src="{{item.image}}" class="post-list-image" mode="aspectFill"></image>
+      </view>
+      <text class="post-content">{{item.content}}</text>
+      <view class="post-footer">
+        <view class="post-meta">
+          <text>🕐 {{item.create_time}}</text>
+          <text>👁️ {{item.views}} 浏览</text>
+        </view>
+        <view class="post-actions">
+          <button bindtap="likePost" data-id="{{item.id}}" data-liked="{{item.is_liked}}" class="action-btn">
+            <text class="action-icon-text">{{item.is_liked ? '❤️' : '🤍'}}</text>
+            <text class="action-text">{{item.likes}}</text>
+          </button>
+          <button bindtap="collectPost" data-id="{{item.id}}" data-collected="{{item.is_collected}}" class="action-btn">
+            <text class="action-icon-text">{{item.is_collected ? '⭐' : '☆'}}</text>
+            <text class="action-text">收藏</text>
+          </button>
+          <button bindtap="viewPostDetail" data-id="{{item.id}}" class="action-btn">
+            <text class="action-icon-text">👁️</text>
+            <text class="action-text">详情</text>
+          </button>
+          <button bindtap="deletePost" data-id="{{item.id}}" class="action-btn">
+            <text class="action-icon-text">🗑️</text>
+            <text class="action-text">删除</text>
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button bindtap="showAddDialog" class="add-btn">
+    <text class="add-btn-text">+</text>
+  </button>
+
+  <view wx:if="{{showDialog}}" class="dialog-overlay">
+    <view class="dialog-content">
+      <view class="dialog-header">
+        <text class="dialog-title">✨ 发布帖子</text>
+        <button bindtap="hideDialog" class="dialog-close">×</button>
+      </view>
+      <view class="dialog-body">
+        <view class="form-item">
+          <text class="form-label">标题</text>
+          <input bindinput="onFormInput" data-key="title" value="{{formData.title}}" placeholder="给帖子起个吸引人的标题" class="form-input" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">内容</text>
+          <textarea bindinput="onFormInput" data-key="content" value="{{formData.content}}" placeholder="分享你的想法和经验..." class="form-textarea" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">图片</text>
+          <view class="image-upload" bindtap="chooseImage">
+            <image wx:if="{{formData.image}}" src="{{formData.image}}" class="preview-image" mode="aspectFill"></image>
+            <view wx:else class="upload-placeholder">
+              <text class="upload-icon">📷</text>
+              <text class="upload-text">点击上传图片</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="dialog-footer">
+        <button bindtap="hideDialog" class="dialog-btn cancel-btn">取消</button>
+        <button bindtap="submitForm" class="dialog-btn confirm-btn">发布</button>
+      </view>
+    </view>
+  </view>
+</view>

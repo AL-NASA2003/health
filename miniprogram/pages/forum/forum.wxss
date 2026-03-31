@@ -1,0 +1,381 @@
+.container {
+  padding: 20rpx;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  padding: 40rpx;
+}
+
+.empty-icon {
+  width: 150rpx;
+  height: 150rpx;
+  opacity: 0.3;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #999999;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.post-list {
+  margin-bottom: 120rpx;
+}
+
+.post-item {
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12), 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.post-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.12);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.post-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1a1a2e;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-tag {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  margin-left: 16rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
+}
+
+.post-content {
+  font-size: 30rpx;
+  color: #4a4a68;
+  line-height: 1.8;
+  margin-bottom: 20rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2rpx solid #f0f0f0;
+  padding-top: 20rpx;
+  margin-top: 20rpx;
+}
+
+.post-meta {
+  font-size: 26rpx;
+  color: #a0a0b0;
+  display: flex;
+  gap: 30rpx;
+  align-items: center;
+}
+
+.post-actions {
+  display: flex;
+  gap: 20rpx;
+  align-items: center;
+}
+
+.action-btn {
+  padding: 12rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #6c757d;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.action-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.action-icon-text {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.action-text {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.add-btn {
+  position: fixed;
+  bottom: 40rpx;
+  right: 40rpx;
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+  color: #fff;
+  font-size: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.4);
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.add-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.4);
+}
+
+.add-btn-text {
+  font-size: 80rpx;
+  line-height: 1;
+  font-weight: 300;
+}
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8rpx);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dialog-content {
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  border-radius: 24rpx;
+  width: 88%;
+  max-width: 680rpx;
+  max-height: 85vh;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 30rpx 24rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  background: linear-gradient(90deg, #07c160 0%, #06ad56 100%);
+}
+
+.dialog-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.dialog-close {
+  font-size: 48rpx;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.dialog-body {
+  padding: 30rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.form-item {
+  margin-bottom: 28rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 12rpx;
+}
+
+.form-input {
+  width: 100%;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #f5576c;
+  box-shadow: 0 0 0 6rpx rgba(245, 87, 108, 0.1);
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  height: 240rpx;
+  resize: none;
+  background: #ffffff;
+  transition: all 0.3s ease;
+  line-height: 1.6;
+}
+
+.form-textarea:focus {
+  border-color: #f5576c;
+  box-shadow: 0 0 0 6rpx rgba(245, 87, 108, 0.1);
+}
+
+.dialog-footer {
+  display: flex;
+  border-top: 2rpx solid #f0f0f0;
+  background: #ffffff;
+}
+
+.dialog-btn {
+  flex: 1;
+  padding: 28rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  background: none;
+  transition: all 0.3s ease;
+}
+
+.dialog-btn:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.cancel-btn {
+  color: #6c757d;
+  border-right: 2rpx solid #f0f0f0;
+}
+
+.confirm-btn {
+  color: #07c160;
+}
+
+/* 图片上传样式 */
+.image-upload {
+  width: 100%;
+  height: 300rpx;
+  border: 2rpx dashed #d0d0d0;
+  border-radius: 12rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.upload-icon {
+  font-size: 60rpx;
+}
+
+.upload-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 帖子列表图片样式 */
+.post-image-wrapper {
+  width: 100%;
+  height: 400rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.post-list-image {
+  width: 100%;
+  height: 100%;
+}
