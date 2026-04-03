@@ -1,9 +1,9 @@
 from flask import Blueprint, g, request
 from app.models.recipe import Recipe
 from app.models.user import User
+from app.models.user_goal import UserGoal
 from app.models.user_collection import UserCollection
 from app.utils.common import format_response
-from app.utils.nutrition_calculator import NutritionCalculator
 from app.utils.health_index_calculator import HealthIndexCalculator
 from loguru import logger
 
@@ -35,30 +35,43 @@ def search_recipe():
 @recipe_bp.route("/recommend", methods=["POST"])
 @login_required
 def recommend_recipe():
-    """AI 个性化食谱推荐（简化版，移除 API 调用）"""
+    """个性化食谱推荐"""
     # 获取用户信息
     user = User.query.get(g.user_id)
     if not user or not user.health_goal:
         return format_response(400, "用户健康目标未设置，无法推荐")
     
-    # 计算营养需求
-    nutrition_needs = NutritionCalculator.calculate_nutrition_needs(user)
-    daily_meal_plan = NutritionCalculator.generate_daily_meal_plan(nutrition_needs)
-    
     # 构建用户画像
     user_profile = (
         f"{user.age}岁，{'男' if user.gender == 1 else '女'}，身高{user.height}cm，体重{user.weight}kg，"
-        f"健康目标{user.health_goal}，饮食偏好{user.dietary_preference or '清淡'}，"
-        f"每日推荐热量{nutrition_needs['calorie']}大卡"
+        f"健康目标{user.health_goal}，饮食偏好{user.dietary_preference or '清淡'}"
     )
+    
+    # 计算基本营养需求
+    nutrition_needs = {
+        "calorie": user.target_calorie or 2000,
+        "protein": user.target_protein or 75,
+        "carb": user.target_carb or 250,
+        "fat": user.target_fat or 65
+    }
+    
+    # 简化的每日膳食计划
+    daily_meal_plan = {
+        "breakfast": "建议摄入30%热量",
+        "lunch": "建议摄入40%热量",
+        "dinner": "建议摄入30%热量"
+    }
     
     # 获取所有食谱
     recipes = Recipe.get_all()
     if not recipes:
         return format_response(404, "暂无食谱数据")
     
-    # 使用健康指数计算器生成推荐（本地计算，无需 API 调用）
+    # 使用健康指数计算器生成推荐
     recommend_list = HealthIndexCalculator.generate_personalized_recipe_recommendations(user, recipes)
+    
+    # 转换推荐列表为字典格式
+    recommend_list = [r.to_dict() if hasattr(r, 'to_dict') else r for r in recommend_list]
     
     return format_response(data={
         "user_profile": user_profile,

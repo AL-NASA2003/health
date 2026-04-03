@@ -15,6 +15,7 @@
     "pages/hotfood/hotfood",
     "pages/handbook/handbook",
     "pages/forum/forum",
+    "pages/forum/detail/detail",
     "pages/user/user",
     "pages/user/edit-profile/edit-profile",
     "pages/webview/webview"

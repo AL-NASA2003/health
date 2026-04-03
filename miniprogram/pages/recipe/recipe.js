@@ -218,23 +218,47 @@ Page({
       return;
     }
 
-    // 不显示 loading 弹窗，静默更新
+    // 显示加载提示
+    wx.showLoading({ title: '推荐中...' });
+
+    // 获取个性化推荐
     post('/recipe/recommend', {}, false)
       .then((result) => {
-        if (result && result.data) {
+        wx.hideLoading();
+        console.log('推荐API返回结果：', result);
+        if (result && result.data && result.data.recommend_list) {
+          // 处理推荐列表，确保数据格式正确
+          const recommendList = result.data.recommend_list.map(item => ({
+            id: item.recipe_id || item.id,
+            recipe_name: item.recipe_name || item.name,
+            calorie: item.calorie,
+            protein: item.protein,
+            carb: item.carb,
+            fat: item.fat,
+            flavor: item.flavor,
+            cook_step: item.cook_step,
+            ingre_list: item.ingre_list,
+            cook_type: item.cook_type,
+            suitable_crowd: item.suitable_crowd,
+            image: item.image || ''
+          }));
+          
           this.setData({
-            recipeList: result.data.recommend_list || [],
-            filteredList: result.data.recommend_list || [],
+            recipeList: recommendList,
+            filteredList: recommendList,
             hasRecommend: true,
             nutritionNeeds: result.data.nutrition_needs,
             dailyMealPlan: result.data.daily_meal_plan
           });
           wx.showToast({ title: '推荐成功' });
+        } else {
+          wx.showToast({ title: '推荐失败，请重试', icon: 'none' });
         }
       })
       .catch((err) => {
+        wx.hideLoading();
         console.error('获取推荐食谱失败：', err);
-        // 保持默认数据，不做任何处理
+        wx.showToast({ title: '推荐失败，请检查网络', icon: 'none' });
       });
   },
 

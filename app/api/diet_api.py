@@ -118,6 +118,9 @@ class DietRecordResource(Resource):
         
         # 调用正确的方法获取饮食记录
         if start_date and end_date:
+            # 转换为date对象
+            start_date = start_date.date()
+            end_date = end_date.date()
             records = DietRecord.get_by_user_and_date(g.user_id, start_date, end_date)
         else:
             records = DietRecord.get_by_user(g.user_id)

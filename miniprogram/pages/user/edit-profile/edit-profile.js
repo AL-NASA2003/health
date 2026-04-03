@@ -225,6 +225,25 @@ Page({
         this.setData({ loading: false });
         
         if (result.code === 0) {
+          // 保存用户目标到数据库
+          post('/health/goal', {
+            daily_calorie_goal: 2000, // 默认值，实际项目中应该根据用户信息计算
+            daily_water_goal: 2000, // 默认值
+            daily_exercise_goal: 30, // 默认值
+            health_goal: userInfo.goal,
+            dietary_preference: '清淡' // 默认值，实际项目中应该让用户选择
+          }, false)
+            .then((goalResult) => {
+              if (goalResult && goalResult.code === 0) {
+                console.log('用户目标保存成功');
+              } else {
+                console.error('用户目标保存失败：', goalResult);
+              }
+            })
+            .catch((err) => {
+              console.error('用户目标保存失败：', err);
+            });
+          
           // 重新获取更新后的用户信息
           get('/user/info')
             .then((userResult) => {

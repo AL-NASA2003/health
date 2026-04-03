@@ -216,8 +216,22 @@ function batchRequest(requests) {
 function clearRequestCache() {
   try {
     const keys = wx.getStorageInfoSync().keys;
-    const requestCacheKeys = keys.filter(key => key.startsWith(`cache_${CACHE_CONFIG.CACHE_KEY_PREFIX}`));
-    requestCacheKeys.forEach(key => cache.remove(key.substring(6))); // 移除 'cache_' 前缀
+    // 清除所有与请求相关的缓存
+    const requestCacheKeys = keys.filter(key => 
+      key.startsWith('cache_') || key.startsWith(CACHE_CONFIG.CACHE_KEY_PREFIX)
+    );
+    requestCacheKeys.forEach(key => {
+      try {
+        if (key.startsWith('cache_')) {
+          cache.remove(key.substring(6)); // 移除 'cache_' 前缀
+        } else {
+          cache.remove(key);
+        }
+      } catch (e) {
+        console.log('清除单个缓存失败:', key, e);
+      }
+    });
+    console.log('请求缓存清除完成，清除了', requestCacheKeys.length, '个缓存');
   } catch (e) {
     console.error('清除请求缓存失败:', e);
   }

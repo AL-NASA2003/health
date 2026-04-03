@@ -121,6 +121,32 @@ Page({
     const today = new Date();
     const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     
+    // 保存到数据库
+    const { post } = require('../../utils/request');
+    post('/health/index/record', {
+      height: parseFloat(this.data.height),
+      weight: parseFloat(this.data.weight),
+      age: parseInt(this.data.age),
+      gender: this.data.genderIndex,
+      bmi: parseFloat(bmi),
+      bmi_status: status,
+      bmr: parseInt(this.data.bmr),
+      ideal_weight: this.data.idealWeight,
+      daily_calories: parseInt(this.data.dailyCalories),
+      health_score: parseInt(this.calculateHealthScore())
+    }, false)
+      .then((result) => {
+        if (result && result.code === 0) {
+          console.log('健康指数记录保存成功');
+        } else {
+          console.error('健康指数记录保存失败：', result);
+        }
+      })
+      .catch((err) => {
+        console.error('健康指数记录保存失败：', err);
+      });
+    
+    // 同时保存到本地存储作为备用
     const newRecord = {
       date: date,
       bmi: bmi,
@@ -140,7 +166,48 @@ Page({
   },
 
   loadHistory() {
-    const historyList = wx.getStorageSync('healthHistory') || [];
-    this.setData({ historyList: historyList.slice(0, 10) });
+    // 从数据库获取健康指数记录
+    const { get } = require('../../utils/request');
+    get('/health/index/record', { limit: 10 }, false)
+      .then((result) => {
+        if (result && result.data && result.data.list) {
+          const historyList = result.data.list.map(item => ({
+            date: item.create_time.split(' ')[0],
+            bmi: item.bmi,
+            status: item.bmi_status,
+            statusClass: item.bmi_status === '正常' ? 'normal' : item.bmi_status === '偏瘦' ? 'thin' : item.bmi_status === '偏胖' ? 'overweight' : 'obese'
+          }));
+          this.setData({ historyList: historyList });
+        }
+      })
+      .catch((err) => {
+        console.error('获取健康指数记录失败：', err);
+        // 从本地存储获取作为备用
+        const historyList = wx.getStorageSync('healthHistory') || [];
+        this.setData({ historyList: historyList.slice(0, 10) });
+      });
+  },
+
+  calculateHealthScore() {
+    // 计算健康分数
+    const bmi = parseFloat(this.data.bmi);
+    let healthScore = 0;
+    
+    // BMI 分数 (0-40)
+    if (bmi >= 18.5 && bmi < 24) {
+      healthScore += 40;
+    } else if (bmi >= 17 && bmi < 18.5) {
+      healthScore += 30;
+    } else if (bmi >= 24 && bmi < 26) {
+      healthScore += 30;
+    } else if (bmi >= 16 && bmi < 17) {
+      healthScore += 20;
+    } else if (bmi >= 26 && bmi < 28) {
+      healthScore += 20;
+    } else {
+      healthScore += 10;
+    }
+    
+    return healthScore;
   }
 });

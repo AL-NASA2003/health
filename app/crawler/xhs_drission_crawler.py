@@ -65,28 +65,10 @@ class XHSDrissionCrawler:
         """初始化DrissionPage，优化Chrome启动速度"""
         # 随机选择 User-Agent
         user_agent = random.choice(self.user_agents)
-        # 创建页面对象，添加优化参数
+        # 创建页面对象
         page = ChromiumPage(
             # 使用无头模式加速启动
             # headless=True,  # 可选：如果不需要可视化可以启用
-            # 添加启动参数加速
-            browser_args=[
-                '--no-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-gpu',
-                '--disable-software-rasterizer',
-                '--disable-extensions',
-                '--disable-default-apps',
-                '--no-first-run',
-                '--no-default-browser-check',
-                '--disable-infobars',
-                '--disable-notifications',
-                '--disable-popup-blocking',
-                '--disable-translate',
-                '--disable-web-security',
-                '--disable-features=IsolateOrigins,site-per-process',
-                '--blink-settings=imagesEnabled=false',  # 禁用图片加载加速
-            ]
         )
         # 设置User-Agent
         page.set.user_agent(user_agent)

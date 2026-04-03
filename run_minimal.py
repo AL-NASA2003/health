@@ -6,6 +6,10 @@ import sys
 import os
 from datetime import datetime
 
+# 添加用户目录到搜索路径
+user_site_packages = os.path.join(os.path.expanduser('~'), 'AppData', 'Roaming', 'Python', 'Python310', 'site-packages')
+sys.path.insert(0, user_site_packages)
+
 # 修复Werkzeug与Flask的兼容性问题
 import werkzeug.urls
 if not hasattr(werkzeug.urls, 'url_quote'):
@@ -59,14 +63,14 @@ try:
         })
     
     print("=" * 60)
-    print("🎉 健康饮食系统API服务启动成功！")
+    print("健康饮食系统API服务启动成功！")
     print("=" * 60)
-    print(f"📍 服务地址: http://0.0.0.0:5000")
-    print(f"📍 健康检查: http://0.0.0.0:5000/api/health")
-    print(f"📍 用户注册: POST http://0.0.0.0:5000/api/user/register")
-    print(f"📍 用户登录: POST http://0.0.0.0:5000/api/user/login")
+    print(f"服务地址: http://0.0.0.0:5000")
+    print(f"健康检查: http://0.0.0.0:5000/api/health")
+    print(f"用户注册: POST http://0.0.0.0:5000/api/user/register")
+    print(f"用户登录: POST http://0.0.0.0:5000/api/user/login")
     print("=" * 60)
-    print("⚠️  注意：当前为最小化版本，数据库功能未启用")
+    print("注意：当前为最小化版本，数据库功能未启用")
     print("=" * 60)
     
     if __name__ == "__main__":
@@ -78,12 +82,12 @@ try:
         )
         
 except ImportError as e:
-    print(f"❌ 导入错误: {e}")
+    print(f"导入错误: {e}")
     print("\n请确保已安装Flask:")
     print("  pip install Flask==2.3.3")
     sys.exit(1)
 except Exception as e:
-    print(f"❌ 启动失败: {e}")
+    print(f"启动失败: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)

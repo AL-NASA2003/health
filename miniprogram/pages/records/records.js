@@ -1,4 +1,4 @@
-const { get, post, put, del } = require('../../utils/request');
+const { get, post, put, del, clearRequestCache } = require('../../utils/request');
 const { getUserInfo } = require('../../utils/storage');
 const { loginGuard } = require('../../utils/auth');
 const { loadMockData } = require('../../utils/mockData');
@@ -109,34 +109,103 @@ Page({
     this.getDietList();
     
     // 加载饮水记录
-    const today = new Date().toISOString().split('T')[0];
-    const waterData = wx.getStorageSync(`water_${today}`);
-    const waterRecords = waterData?.records || [];
-    const totalWater = waterData?.totalAmount || 0;
+    this.getWaterList();
     
     // 加载运动记录
-    const exerciseData = wx.getStorageSync(`exercise_${today}`);
-    const exerciseRecords = exerciseData?.records || [];
-    
-    // 计算运动总热量消耗
-    let totalExerciseCalories = 0;
-    let totalExerciseDuration = 0;
-    exerciseRecords.forEach(record => {
-      totalExerciseCalories += record.totalCalories || 0;
-      totalExerciseDuration += record.duration || 0;
-    });
-    
-    this.setData({
-      waterRecords: waterRecords,
-      totalWater: totalWater,
-      currentAmount: totalWater,
-      exerciseRecords: exerciseRecords,
-      totalExerciseCalories: totalExerciseCalories,
-      totalExerciseDuration: totalExerciseDuration
-    });
-    
-    this.updateWaterProgress();
-    this.updateExerciseStats();
+    this.getExerciseList();
+  },
+
+  getWaterList() {
+    const today = new Date().toISOString().split('T')[0];
+    get('/water/record', { date: today }, false)
+      .then((result) => {
+        if (result && result.data && result.data.list) {
+          const waterRecords = result.data.list.map(item => ({
+            id: item.id,
+            amount: item.amount,
+            time: item.create_time.split(' ')[1]
+          }));
+          const totalWater = waterRecords.reduce((sum, item) => sum + item.amount, 0);
+          
+          this.setData({
+            waterRecords: waterRecords,
+            totalWater: totalWater,
+            currentAmount: totalWater
+          });
+          
+          this.updateWaterProgress();
+        }
+      })
+      .catch((err) => {
+        console.error('获取饮水记录失败：', err);
+        // 加载本地存储作为备用
+        const waterData = wx.getStorageSync(`water_${today}`);
+        const waterRecords = waterData?.records || [];
+        const totalWater = waterData?.totalAmount || 0;
+        
+        this.setData({
+          waterRecords: waterRecords,
+          totalWater: totalWater,
+          currentAmount: totalWater
+        });
+        
+        this.updateWaterProgress();
+      });
+  },
+
+  getExerciseList() {
+    const today = new Date().toISOString().split('T')[0];
+    get('/exercise/record', { date: today }, false)
+      .then((result) => {
+        if (result && result.data && result.data.list) {
+          const exerciseRecords = result.data.list.map(item => ({
+            id: item.id,
+            name: item.name,
+            icon: '⚡',
+            color: 'linear-gradient(135deg, #a8edea, #fed6e3)',
+            duration: item.duration,
+            caloriesPerHour: Math.round(item.calories / (item.duration / 60)),
+            totalCalories: item.calories,
+            time: item.create_time.split(' ')[1]
+          }));
+          
+          let totalExerciseCalories = 0;
+          let totalExerciseDuration = 0;
+          exerciseRecords.forEach(record => {
+            totalExerciseCalories += record.totalCalories || 0;
+            totalExerciseDuration += record.duration || 0;
+          });
+          
+          this.setData({
+            exerciseRecords: exerciseRecords,
+            totalExerciseCalories: totalExerciseCalories,
+            totalExerciseDuration: totalExerciseDuration
+          });
+          
+          this.updateExerciseStats();
+        }
+      })
+      .catch((err) => {
+        console.error('获取运动记录失败：', err);
+        // 加载本地存储作为备用
+        const exerciseData = wx.getStorageSync(`exercise_${today}`);
+        const exerciseRecords = exerciseData?.records || [];
+        
+        let totalExerciseCalories = 0;
+        let totalExerciseDuration = 0;
+        exerciseRecords.forEach(record => {
+          totalExerciseCalories += record.totalCalories || 0;
+          totalExerciseDuration += record.duration || 0;
+        });
+        
+        this.setData({
+          exerciseRecords: exerciseRecords,
+          totalExerciseCalories: totalExerciseCalories,
+          totalExerciseDuration: totalExerciseDuration
+        });
+        
+        this.updateExerciseStats();
+      });
   },
 
   // ========== 饮食记录相关函数 ==========
@@ -149,13 +218,23 @@ Page({
   },
 
   getDietList() {
-    get('/diet/record', {}, false)
+    const today = new Date().toISOString().split('T')[0];
+    console.log('获取饮食记录，日期:', today);
+    get('/diet/record', { start_date: today, end_date: today }, false)
       .then((result) => {
+        console.log('获取饮食记录结果:', result);
         if (result && result.data && result.data.list) {
           const dietList = result.data.list;
+          console.log('饮食记录列表:', dietList);
           this.calculateTotalCalories(dietList);
           this.setData({
             dietList,
+            loading: false
+          });
+        } else {
+          console.log('无饮食记录数据');
+          this.setData({
+            dietList: [],
             loading: false
           });
         }
@@ -327,27 +406,56 @@ Page({
       params.ingredient_id = formData.ingredientId;
     }
     
+    // 先在前端显示，提升用户体验
     if (isEdit && editRecordId) {
-      put(`/diet/record/${editRecordId}`, params)
+      // 编辑模式：更新前端数据
+      const updatedList = this.data.dietList.map(item => {
+        if (item.id === editRecordId) {
+          return { ...item, ...params, calorie: params.weight * 1.1 };
+        }
+        return item;
+      });
+      this.calculateTotalCalories(updatedList);
+      this.setData({ dietList: updatedList });
+      this.hideAddDialog();
+      wx.showToast({ title: '更新成功' });
+      
+      // 异步写入后端，不刷新页面
+      put(`/diet/record/${editRecordId}`, params, false, false)
         .then((result) => {
-          wx.showToast({ title: '更新成功' });
-          this.hideAddDialog();
-          this.getDietList();
+          clearRequestCache(); // 清除缓存
         })
         .catch((err) => {
           console.error('更新饮食记录失败：', err);
-          wx.showToast({ title: '更新失败', icon: 'none' });
+          wx.showToast({ title: '网络同步失败', icon: 'none' });
         });
     } else {
-      post('/diet/record', params)
+      // 新增模式：先在前端显示
+      const now = new Date();
+      const newRecord = {
+        id: Date.now(),
+        ...params,
+        calorie: params.weight * 1.1,
+        protein: params.weight * 0.02,
+        carb: params.weight * 0.03,
+        fat: params.weight * 0.01,
+        create_time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      };
+      
+      const updatedList = [newRecord, ...this.data.dietList];
+      this.calculateTotalCalories(updatedList);
+      this.setData({ dietList: updatedList });
+      this.hideAddDialog();
+      wx.showToast({ title: '添加成功' });
+      
+      // 异步写入后端，不刷新页面
+      post('/diet/record', params, false, false)
         .then((result) => {
-          wx.showToast({ title: '添加成功' });
-          this.hideAddDialog();
-          this.getDietList();
+          clearRequestCache(); // 清除缓存
         })
         .catch((err) => {
           console.error('添加饮食记录失败：', err);
-          wx.showToast({ title: '添加失败', icon: 'none' });
+          wx.showToast({ title: '网络同步失败', icon: 'none' });
         });
     }
   },
@@ -360,14 +468,22 @@ Page({
       content: '确定要删除这条记录吗？',
       success: (res) => {
         if (res.confirm) {
-          del(`/diet/record/${id}`)
+          // 先在前端删除，提升用户体验
+          const updatedList = this.data.dietList.filter(item => item.id !== id);
+          this.calculateTotalCalories(updatedList);
+          this.setData({ dietList: updatedList });
+          wx.showToast({ title: '删除成功' });
+          
+          // 异步调用后端删除
+          del(`/diet/record/${id}`, {}, false, false)
             .then((result) => {
-              wx.showToast({ title: '删除成功' });
-              this.getDietList();
+              clearRequestCache(); // 清除缓存
             })
             .catch((err) => {
               console.error('删除记录失败：', err);
-              wx.showToast({ title: '删除失败', icon: 'none' });
+              // 如果后端删除失败，恢复数据
+              this.loadAllRecords();
+              wx.showToast({ title: '网络同步失败', icon: 'none' });
             });
         }
       }
@@ -421,10 +537,12 @@ Page({
   },
 
   addWaterAmount(amount) {
+    // 先在前端显示，提升用户体验
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     
     const newRecord = {
+      id: Date.now(),
       amount: amount,
       time: time
     };
@@ -439,15 +557,15 @@ Page({
     });
     
     this.updateWaterProgress();
-    this.saveWaterData();
     
     wx.showToast({
       title: `已添加 ${amount}ml`,
       icon: 'success'
     });
     
+    // 检查是否完成目标
     if (newTotal >= this.data.dailyTarget && 
-        newTotal - amount < this.data.dailyTarget) {
+        this.data.currentAmount < this.data.dailyTarget) {
       setTimeout(() => {
         wx.showModal({
           title: '恭喜！',
@@ -456,6 +574,16 @@ Page({
         });
       }, 1000);
     }
+    
+    // 异步写入后端，不刷新页面
+    post('/water/record', { amount: amount }, false, false)
+      .then((result) => {
+        clearRequestCache(); // 清除缓存
+      })
+      .catch((err) => {
+        console.error('添加饮水记录失败：', err);
+        wx.showToast({ title: '网络同步失败', icon: 'none' });
+      });
   },
 
   deleteWaterRecord(e) {
@@ -467,13 +595,33 @@ Page({
       content: `确定要删除这条 ${record.amount}ml 的记录吗？`,
       success: (res) => {
         if (res.confirm) {
-          const today = new Date().toISOString().split('T')[0];
-          const waterData = wx.getStorageSync(`water_${today}`) || { records: [], totalAmount: 0 };
-          waterData.records.splice(index, 1);
-          waterData.totalAmount = Math.max(0, waterData.totalAmount - record.amount);
-          wx.setStorageSync(`water_${today}`, waterData);
-          this.loadAllRecords();
+          // 先在前端删除，提升用户体验
+          const newRecords = [...this.data.waterRecords];
+          newRecords.splice(index, 1);
+          const newTotal = Math.max(0, this.data.currentAmount - record.amount);
+          
+          this.setData({
+            waterRecords: newRecords,
+            currentAmount: newTotal,
+            totalWater: newTotal
+          });
+          
+          this.updateWaterProgress();
           wx.showToast({ title: '删除成功', icon: 'success' });
+          
+          // 如果有ID，异步调用后端删除
+          if (record.id) {
+            del(`/water/record/${record.id}`, {}, false, false)
+              .then((result) => {
+                clearRequestCache(); // 清除缓存
+              })
+              .catch((err) => {
+                console.error('删除饮水记录失败：', err);
+                // 如果后端删除失败，恢复数据
+                this.loadAllRecords();
+                wx.showToast({ title: '网络同步失败', icon: 'none' });
+              });
+          }
         }
       }
     });
@@ -578,11 +726,14 @@ Page({
   },
 
   addExerciseRecord(exerciseType, duration) {
-    const now = new Date();
-    const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     const totalCalories = Math.round((exerciseType.calories / 60) * duration);
     
+    // 先在前端显示，提升用户体验
+    const now = new Date();
+    const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
     const newRecord = {
+      id: Date.now(),
       name: exerciseType.name,
       icon: exerciseType.icon,
       color: exerciseType.color,
@@ -601,12 +752,25 @@ Page({
     });
     
     this.updateExerciseStats();
-    this.saveExerciseData();
     
     wx.showToast({
       title: `已记录 ${exerciseType.name} ${duration}分钟`,
       icon: 'success'
     });
+    
+    // 异步写入后端，不刷新页面
+    post('/exercise/record', { 
+      name: exerciseType.name, 
+      duration: duration, 
+      calories: totalCalories 
+    }, false, false)
+      .then((result) => {
+        clearRequestCache(); // 清除缓存
+      })
+      .catch((err) => {
+        console.error('添加运动记录失败：', err);
+        wx.showToast({ title: '网络同步失败', icon: 'none' });
+      });
   },
 
   saveExerciseData() {
@@ -626,6 +790,7 @@ Page({
       content: `确定要删除这条 ${record.name} 记录吗？`,
       success: (res) => {
         if (res.confirm) {
+          // 先在前端删除，提升用户体验
           const newRecords = [...this.data.exerciseRecords];
           newRecords.splice(index, 1);
           
@@ -636,12 +801,21 @@ Page({
           });
           
           this.updateExerciseStats();
-          this.saveExerciseData();
+          wx.showToast({ title: '删除成功', icon: 'success' });
           
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success'
-          });
+          // 如果有ID，异步调用后端删除
+          if (record.id) {
+            del(`/exercise/record/${record.id}`, {}, false, false)
+              .then((result) => {
+                clearRequestCache(); // 清除缓存
+              })
+              .catch((err) => {
+                console.error('删除运动记录失败：', err);
+                // 如果后端删除失败，恢复数据
+                this.loadAllRecords();
+                wx.showToast({ title: '网络同步失败', icon: 'none' });
+              });
+          }
         }
       }
     });

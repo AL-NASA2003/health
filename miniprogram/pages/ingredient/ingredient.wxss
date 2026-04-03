@@ -4,9 +4,20 @@
   min-height: 100vh;
 }
 
+/* 页面标题 */
+.page-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+/* 搜索栏 */
 .search-bar {
   display: flex;
   margin-bottom: 30rpx;
+  align-items: center;
 }
 
 .search-input {
@@ -17,6 +28,7 @@
   padding: 0 30rpx;
   font-size: 28rpx;
   margin-right: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .search-btn {
@@ -27,39 +39,148 @@
   border-radius: 40rpx;
   font-size: 28rpx;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.3);
 }
 
+.search-btn-text {
+  font-size: 28rpx;
+  color: #fff;
+}
+
+/* 添加食材按钮 */
+.add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.add-btn-icon {
+  font-size: 36rpx;
+  color: #07c160;
+  margin-right: 10rpx;
+  font-weight: bold;
+}
+
+.add-btn-text {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 空状态 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.empty-tip {
+  padding: 12rpx 30rpx;
+  background: #07c160;
+  border-radius: 20rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.empty-tip:hover {
+  background: #06a855;
+  transform: translateY(-2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.3);
+}
+
+.empty-tip-text {
+  font-size: 24rpx;
+  color: #fff;
+}
+
+/* 食材列表 */
 .ingredient-list {
   background: #fff;
   border-radius: 16rpx;
   padding: 0 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .ingredient-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 30rpx 0;
   border-bottom: 1rpx solid #f0f0f0;
+  transition: all 0.3s ease;
 }
 
 .ingredient-item:last-child {
   border-bottom: none;
 }
 
-.ingredient-info {
-  flex: 1;
+.ingredient-item:hover {
+  background: rgba(7, 193, 96, 0.05);
+  margin: 0 -30rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
 }
 
-.ingredient-name {
+/* 食材基本信息 */
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.item-name {
   font-size: 32rpx;
-  color: #333;
   font-weight: bold;
-  display: block;
-  margin-bottom: 8rpx;
+  color: #333;
 }
 
-.ingredient-category {
+.item-category {
   font-size: 24rpx;
   color: #07c160;
   background: rgba(7, 193, 96, 0.1);
@@ -67,13 +188,313 @@
   border-radius: 8rpx;
 }
 
-.ingredient-nutrition {
-  text-align: right;
+/* 营养成分 */
+.nutrition-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15rpx;
+  margin-bottom: 20rpx;
 }
 
 .nutrition-item {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx;
+  background: #f9f9f9;
+  border-radius: 8rpx;
+}
+
+.nutrition-label {
   font-size: 24rpx;
   color: #666;
-  margin-bottom: 4rpx;
+}
+
+.nutrition-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 库存与保质期 */
+.stock-info {
+  margin-bottom: 20rpx;
+}
+
+.stock-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.stock-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-right: 10rpx;
+}
+
+.stock-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+  margin-right: 10rpx;
+}
+
+.stock-warning {
+  background: #ff9500;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.stock-warning-text {
+  font-size: 20rpx;
+  color: #fff;
+}
+
+.expire-item {
+  display: flex;
+  align-items: center;
+}
+
+.expire-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-right: 10rpx;
+}
+
+.expire-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+  margin-right: 10rpx;
+}
+
+.expire-warning {
+  background: #ff3b30;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.expire-warning-text {
+  font-size: 20rpx;
+  color: #fff;
+}
+
+/* 操作按钮 */
+.item-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15rpx;
+}
+
+.action-btn {
+  padding: 10rpx 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e0e0e0;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.edit-btn {
+  border-color: #07c160;
+  color: #07c160;
+}
+
+.edit-btn:hover {
+  background: #07c160;
+  color: #fff;
+}
+
+.delete-btn {
+  border-color: #ff3b30;
+  color: #ff3b30;
+}
+
+.delete-btn:hover {
+  background: #ff3b30;
+  color: #fff;
+}
+
+.action-btn-text {
+  font-size: 24rpx;
+}
+
+/* 弹窗遮罩 */
+.dialog-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* 弹窗容器 */
+.dialog-container {
+  background: #fff;
+  border-radius: 16rpx;
+  width: 80%;
+  max-width: 600rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: dialogFadeIn 0.3s ease;
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 弹窗头部 */
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.dialog-close {
+  font-size: 40rpx;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dialog-close:hover {
+  color: #333;
+  transform: scale(1.1);
+}
+
+/* 弹窗内容 */
+.dialog-body {
+  padding: 30rpx;
+}
+
+/* 表单项目 */
+.form-item {
+  margin-bottom: 25rpx;
+}
+
+.form-item-small {
+  flex: 1;
+  margin-right: 15rpx;
+}
+
+.form-item-small:last-child {
+  margin-right: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #07c160;
+  background: #fff;
+  box-shadow: 0 0 0 2rpx rgba(7, 193, 96, 0.2);
+}
+
+/* 表单网格 */
+.form-grid {
+  display: flex;
+  margin-bottom: 25rpx;
+}
+
+/* 选择器输入 */
+.picker-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  cursor: pointer;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 弹窗底部 */
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15rpx;
+  padding: 20rpx 30rpx 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.dialog-btn {
+  padding: 15rpx 30rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e0e0e0;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.dialog-btn:hover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.cancel-btn {
+  border-color: #e0e0e0;
+  color: #666;
+}
+
+.confirm-btn {
+  border-color: #07c160;
+  background: #07c160;
+  color: #fff;
+}
+
+.confirm-btn:hover {
+  background: #06a855;
+  border-color: #06a855;
+}
+
+.dialog-btn-text {
+  font-size: 26rpx;
 }

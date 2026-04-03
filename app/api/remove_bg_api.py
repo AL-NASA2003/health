@@ -56,8 +56,9 @@ def remove_bg():
         
         logger.info(f"用户{g.user_id}保存原图：{filename}")
         return format_response(
-            data={"url": file_url, "filename": filename},
-            message="抠图功能暂不可用，已保存原图"
+            code=0,
+            msg="抠图功能暂不可用，已保存原图",
+            data={"url": file_url, "filename": filename}
         )
             
     except Exception as e:

@@ -53,7 +53,7 @@
             <text>{{item.cooking_time}}分钟</text>
           </view>
         </view>
-        <button class="add-to-calendar" bindtap="addToCalendar" data-recipe="{{item}}" catchtap="true}}">加入日历</button>
+        <button class="add-to-calendar" catchtap="addToCalendar" data-recipe="{{item}}">加入日历</button>
       </view>
     </view>
   </view>

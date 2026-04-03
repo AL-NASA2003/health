@@ -8,6 +8,7 @@ import os  # 操作系统相关功能
 from flask_restx import Api  # API文档生成
 from flask_talisman import Talisman  # HTTPS安全增强
 from flask_cors import CORS  # 跨域资源共享
+from loguru import logger  # 导入日志库
 
 # 解决MySQL兼容问题
 pymysql.install_as_MySQLdb()
@@ -35,6 +36,9 @@ def create_app():
     创建Flask应用实例
     此函数是Flask应用的工厂函数，负责初始化和配置应用
     """
+    # 导入日志库
+    from loguru import logger
+    
     # 创建Flask应用实例
     app = Flask(__name__)
     
@@ -127,6 +131,16 @@ def create_app():
         from app.models.user_ingredient import UserIngredient
         # 导入用户点赞模型
         from app.models.user_like import UserLike
+        # 导入饮水记录模型
+        from app.models.water_record import WaterRecord
+        # 导入运动记录模型
+        from app.models.exercise_record import ExerciseRecord
+        # 导入健康指数记录模型
+        from app.models.health_index_record import HealthIndexRecord
+        # 导入饮食统计记录模型
+        from app.models.diet_stat_record import DietStatRecord
+        # 导入用户目标模型
+        from app.models.user_goal import UserGoal
         
         # 创建所有数据库表
         db.create_all()
@@ -169,6 +183,9 @@ def create_app():
     comment_api_module = importlib.import_module('app.api.comment_api')  # 评论API模块
     upload_api_module = importlib.import_module('app.api.upload_api')  # 上传API模块
     wechat_api_module = importlib.import_module('app.api.wechat_api')  # 微信API模块
+    water_api_module = importlib.import_module('app.api.water_api')  # 饮水记录API模块
+    exercise_api_module = importlib.import_module('app.api.exercise_api')  # 运动记录API模块
+    health_api_module = importlib.import_module('app.api.health_api')  # 健康相关API模块
     
     # 直接从模块中获取命名空间并注册
     restx_api.add_namespace(user_api_module.user_ns, path='/api/user')  # 用户API路径: /api/user
@@ -177,6 +194,9 @@ def create_app():
     restx_api.add_namespace(comment_api_module.comment_ns, path='/api/comment')  # 评论API路径: /api/comment
     restx_api.add_namespace(upload_api_module.upload_ns, path='/api/upload')  # 上传API路径: /api/upload
     restx_api.add_namespace(wechat_api_module.wechat_ns, path='/api/wechat')  # 微信API路径: /api/wechat
+    restx_api.add_namespace(water_api_module.water_ns, path='/api/water')  # 饮水记录API路径: /api/water
+    restx_api.add_namespace(exercise_api_module.exercise_ns, path='/api/exercise')  # 运动记录API路径: /api/exercise
+    restx_api.add_namespace(health_api_module.health_ns, path='/api/health')  # 健康相关API路径: /api/health
     
     # 统一错误处理
     from app.utils.common import format_response  # 导入统一响应格式化函数
@@ -206,8 +226,8 @@ def create_app():
         return format_response(400, "请求参数错误")
     
     # 启动定时任务（每半小时爬取一次小红书热点美食）
-    # 只有在非禁用定时任务的环境下才启动
-    if not os.environ.get('DISABLE_SCHEDULER'):
+    # 暂时禁用爬虫任务，以便服务能够正常运行
+    if False and not os.environ.get('DISABLE_SCHEDULER'):
         from app.crawler.xhs_drission_crawler import crawl_xhs_hot_food  # 导入爬虫函数
         import threading
         from loguru import logger
@@ -230,6 +250,8 @@ def create_app():
         # 启动定时任务调度器
         scheduler.start()
         logger.info("定时任务已启动，每2小时执行一次爬取任务")
+    else:
+        logger.info("爬虫任务已禁用，服务将正常运行")
     
     # 启用 HTTPS 强制和安全头
     # 本地开发环境禁用 HTTPS 强制，生产环境启用
