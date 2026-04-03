@@ -1,46 +1,50 @@
+// 引入请求工具、存储工具、登录守卫和模拟数据工具
 const { get, post, put, del, clearRequestCache } = require('../../utils/request');
 const { getUserInfo } = require('../../utils/storage');
 const { loginGuard } = require('../../utils/auth');
 const { loadMockData } = require('../../utils/mockData');
 
+/**
+ * 记录页面 - 包含饮食记录、饮水记录和运动记录功能
+ */
 Page({
   data: {
-    currentTab: 'diet', // diet, water, exercise
+    currentTab: 'diet', // 当前标签页：diet饮食、water饮水、exercise运动
     currentDate: '',
-    // 饮食记录相关数据
-    totalCalories: 0,
-    dietList: [],
-    loading: true,
-    searchKey: '',
-    searchSuggest: [],
-    showAddDialog: false,
-    isEdit: false,
-    editRecordId: null,
-    foodTypes: ['饮品', '菜式', '主食', '水果', '零食'],
-    mealTimes: ['早餐', '午餐', '晚餐', '加餐'],
-    formData: {
+    // ===== 饮食记录相关数据 =====
+    totalCalories: 0,           // 今日摄入总热量
+    dietList: [],               // 饮食记录列表
+    loading: true,              // 加载状态
+    searchKey: '',              // 搜索关键词
+    searchSuggest: [],          // 搜索建议列表
+    showAddDialog: false,       // 是否显示添加对话框
+    isEdit: false,              // 是否为编辑模式
+    editRecordId: null,         // 编辑的记录ID
+    foodTypes: ['饮品', '菜式', '主食', '水果', '零食'],  // 食物类型列表
+    mealTimes: ['早餐', '午餐', '晚餐', '加餐'],          // 用餐时间列表
+    formData: {                 // 表单数据
       foodName: '',
       foodTypeIndex: 1,
       mealTimeIndex: 0,
       weight: '',
       ingredientId: ''
     },
-    // 饮水记录相关数据
-    waterRecords: [],
-    totalWater: 0,
-    dailyTarget: 2000,
-    currentAmount: 0,
-    progressPercent: 0,
-    remainingAmount: 2000,
-    customAmount: '',
-    // 运动记录相关数据
-    exerciseRecords: [],
-    totalExerciseCalories: 0,
-    totalExerciseDuration: 0,
-    todayCalories: 0,
-    todayDuration: 0,
-    todayCount: 0,
-    exerciseTypes: [
+    // ===== 饮水记录相关数据 =====
+    waterRecords: [],           // 饮水记录列表
+    totalWater: 0,              // 今日总饮水量
+    dailyTarget: 2000,          // 每日饮水目标(ml)
+    currentAmount: 0,           // 当前饮水量
+    progressPercent: 0,         // 进度百分比
+    remainingAmount: 2000,      // 剩余饮水量
+    customAmount: '',           // 自定义饮水量
+    // ===== 运动记录相关数据 =====
+    exerciseRecords: [],         // 运动记录列表
+    totalExerciseCalories: 0,    // 运动消耗总热量
+    totalExerciseDuration: 0,    // 运动总时长
+    todayCalories: 0,            // 今日运动消耗热量
+    todayDuration: 0,            // 今日运动时长
+    todayCount: 0,               // 今日运动次数
+    exerciseTypes: [             // 运动类型列表
       { id: 1, name: '跑步', icon: '🏃', calories: 600, color: 'linear-gradient(135deg, #ff6b6b, #ee5a24)' },
       { id: 2, name: '快走', icon: '🚶', calories: 300, color: 'linear-gradient(135deg, #4ecdc4, #44a08d)' },
       { id: 3, name: '游泳', icon: '🏊', calories: 500, color: 'linear-gradient(135deg, #667eea, #764ba2)' },
@@ -50,22 +54,37 @@ Page({
       { id: 7, name: '健身', icon: '💪', calories: 400, color: 'linear-gradient(135deg, #a18cd1, #fbc2eb)' },
       { id: 8, name: '篮球', icon: '🏀', calories: 550, color: 'linear-gradient(135deg, #ff9a9e, #fecfef)' }
     ],
-    customName: '',
-    customDuration: '',
-    customCalories: ''
+    customName: '',              // 自定义运动名称
+    customDuration: '',          // 自定义运动时长
+    customCalories: ''           // 自定义运动消耗热量
   },
 
+  /**
+   * 页面加载时执行
+   * @param {Object} options - 页面参数
+   */
   onLoad(options) {
+    // 登录检查
     if (!loginGuard()) return;
+    // 初始化日期显示
     this.initDate();
+    // 设置当前日期
     this.setCurrentDate();
+    // 加载所有记录
     this.loadAllRecords();
   },
 
+  /**
+   * 页面显示时执行
+   */
   onShow() {
+    // 每次页面显示时刷新记录
     this.loadAllRecords();
   },
 
+  /**
+   * 初始化日期显示（中文格式）
+   */
   initDate() {
     const now = new Date();
     const year = now.getFullYear();
@@ -75,6 +94,9 @@ Page({
     this.setData({ currentDate });
   },
 
+  /**
+   * 设置当前日期（带星期）
+   */
   setCurrentDate() {
     const today = new Date();
     const year = today.getFullYear();

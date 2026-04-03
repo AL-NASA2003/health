@@ -1,35 +1,54 @@
+// 引入存储工具和缓存工具
 const { getToken, clearStorage } = require('./storage');
 const cache = require('./cache');
 
+// Token过期标志，防止重复跳转登录页面
 let isTokenExpired = false;
+// 请求队列，用于限制并发请求数
 const requestQueue = [];
+// 当前正在执行的请求数
 let currentRequests = 0;
+// 最大并发请求数限制
 const MAX_CONCURRENT_REQUESTS = 12;
 
+// 待处理的请求映射，用于去重相同请求
 const pendingRequests = new Map();
 
+// 可缓存的HTTP方法配置
 const CACHEABLE_METHODS = ['GET'];
+// 缓存配置对象
 const CACHE_CONFIG = {
-  ENABLE_CACHE: true,
-  DEFAULT_EXPIRY: 30 * 60 * 1000, // 延长到30分钟
-  CACHE_KEY_PREFIX: 'req:',
-  MIN_CACHE_DURATION: 5000
+  ENABLE_CACHE: true,              // 是否启用缓存
+  DEFAULT_EXPIRY: 30 * 60 * 1000,   // 默认缓存过期时间（30分钟）
+  CACHE_KEY_PREFIX: 'req:',          // 缓存键前缀
+  MIN_CACHE_DURATION: 5000            // 最小缓存持续时间（5秒）
 };
 
+// 请求配置对象
 const REQUEST_CONFIG = {
-  DEFAULT_TIMEOUT: 8000,
-  MAX_RETRIES: 2,
-  RETRY_DELAY: 1000
+  DEFAULT_TIMEOUT: 8000,             // 默认请求超时时间（8秒）
+  MAX_RETRIES: 2,                    // 最大重试次数
+  RETRY_DELAY: 1000                  // 重试延迟时间（1秒）
 };
 
+/**
+ * 生成请求缓存键
+ * @param {string} url - 请求URL
+ * @param {string} method - HTTP方法
+ * @param {Object} data - 请求数据
+ * @returns {string} 缓存键
+ */
 function getRequestCacheKey(url, method, data) {
+  // 将请求参数序列化为字符串
   const params = JSON.stringify({ url, method, data });
+  // 使用简单的哈希算法计算哈希值
   let hash = 0;
   for (let i = 0; i < params.length; i++) {
     const char = params.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash;
   }
+  // 返回完整的缓存键
   return `${CACHE_CONFIG.CACHE_KEY_PREFIX}${method}:${url}:${Math.abs(hash).toString(16)}`;
 }
 

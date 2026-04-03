@@ -221,34 +221,46 @@ Page({
     // 显示加载提示
     wx.showLoading({ title: '推荐中...' });
 
-    // 获取个性化推荐
-    post('/recipe/recommend', {}, false)
+    // 获取个性化推荐 - 正确的API路径是 /recommend/recipe
+    post('/recommend/recipe', {}, false)
       .then((result) => {
         wx.hideLoading();
         console.log('推荐API返回结果：', result);
-        if (result && result.data && result.data.recommend_list) {
+        // 兼容两种返回格式：直接在data中或者在data.recommend_list中
+        let recommendList = [];
+        if (result && result.data) {
+          if (result.data.recommend_list) {
+            recommendList = result.data.recommend_list;
+          } else if (Array.isArray(result.data.list)) {
+            recommendList = result.data.list;
+          } else if (Array.isArray(result.data)) {
+            recommendList = result.data;
+          }
+        }
+        
+        if (recommendList && recommendList.length > 0) {
           // 处理推荐列表，确保数据格式正确
-          const recommendList = result.data.recommend_list.map(item => ({
+          const processedList = recommendList.map(item => ({
             id: item.recipe_id || item.id,
             recipe_name: item.recipe_name || item.name,
             calorie: item.calorie,
             protein: item.protein,
             carb: item.carb,
             fat: item.fat,
-            flavor: item.flavor,
-            cook_step: item.cook_step,
-            ingre_list: item.ingre_list,
-            cook_type: item.cook_type,
-            suitable_crowd: item.suitable_crowd,
+            flavor: item.flavor || '',
+            cook_step: item.cook_step || '',
+            ingre_list: item.ingre_list || '',
+            cook_type: item.cook_type || '',
+            suitable_crowd: item.suitable_crowd || '',
             image: item.image || ''
           }));
           
           this.setData({
-            recipeList: recommendList,
-            filteredList: recommendList,
+            recipeList: processedList,
+            filteredList: processedList,
             hasRecommend: true,
-            nutritionNeeds: result.data.nutrition_needs,
-            dailyMealPlan: result.data.daily_meal_plan
+            nutritionNeeds: result.data.nutrition_needs || null,
+            dailyMealPlan: result.data.daily_meal_plan || null
           });
           wx.showToast({ title: '推荐成功' });
         } else {

@@ -22,10 +22,14 @@ class User(db.Model):
     weight = db.Column(db.Float, default=0.0, comment="体重(kg)")
     age = db.Column(db.Integer, default=0, comment="年龄")
     gender = db.Column(db.Integer, default=0, comment="性别：0-未知 1-男 2-女")
-    waist = db.Column(db.Float, default=0.0, comment="腰围(cm)")
-    hip = db.Column(db.Float, default=0.0, comment="臀围(cm)")
     health_goal = db.Column(db.String(50), default="", comment="健康目标：减脂/增肌/维持")
     dietary_preference = db.Column(db.String(100), default="", comment="饮食偏好，如素食、低碳水等")
+    
+    # 目标营养字段
+    target_calorie = db.Column(db.Float, default=0.0, comment="目标热量(大卡)")
+    target_protein = db.Column(db.Float, default=0.0, comment="目标蛋白质(g)")
+    target_carb = db.Column(db.Float, default=0.0, comment="目标碳水(g)")
+    target_fat = db.Column(db.Float, default=0.0, comment="目标脂肪(g)")
     
     # 其他字段
     phone = db.Column(db.String(255), default="", comment="手机号（加密存储）")
@@ -63,10 +67,13 @@ class User(db.Model):
             "weight": self.weight,
             "age": self.age,
             "gender": gender_str,
-            "waist": self.waist,
-            "hip": self.hip,
             "health_goal": self.health_goal,
             "dietary_preference": self.dietary_preference,
+            "target_calorie": self.target_calorie,
+            "target_protein": self.target_protein,
+            "target_carb": self.target_carb,
+            "target_fat": self.target_fat,
+            "daily_calorie": self.target_calorie or 2000,
             "phone": phone,
             "create_time": self.create_time.strftime("%Y-%m-%d %H:%M:%S")
         }

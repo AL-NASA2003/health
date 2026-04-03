@@ -27,7 +27,11 @@ restx_api = Api(
     version='1.0',  # API版本
     title='健康饮食系统 API',  # API文档标题
     description='健康饮食系统的 RESTful API 文档',  # API文档描述
-    doc='/api/docs'  # API文档访问路径
+    doc='/api/docs',  # API文档访问路径
+    add_specs=False,  # 禁用默认的swagger.json和根路径
+    serve_challenge_on_404=False,  # 禁用Flask-RESTX的404处理
+    default='',  # 禁用默认命名空间
+    ordered=True
 )
 
 
@@ -51,7 +55,7 @@ def create_app():
     import os
     static_dir = os.path.join(BASE_DIR, 'miniprogram')  # 静态文件目录路径
     app.static_folder = static_dir  # 设置静态文件目录
-    app.static_url_path = '/'  # 设置静态文件URL路径
+    app.static_url_path = '/static'  # 设置静态文件URL路径
     print(f'静态文件目录: {static_dir}')  # 打印静态文件目录
     print(f'静态文件URL路径: {app.static_url_path}')  # 打印静态文件URL路径
     
@@ -88,6 +92,20 @@ def create_app():
     # 初始化数据库
     # 将数据库实例与Flask应用关联
     db.init_app(app)
+    
+    # 先添加根路径路由（在restx_api之前）
+    from app.utils.common import format_response
+    @app.route('/', endpoint='root_index', methods=['GET'])
+    def root_index():
+        """
+        根路径 - 返回API服务信息
+        """
+        return format_response(data={
+            "service": "健康饮食管理系统API",
+            "version": "1.0.0",
+            "status": "running",
+            "docs": "/api/docs"
+        })
     
     # 初始化 API 文档
     # 将API文档实例与Flask应用关联
@@ -145,6 +163,9 @@ def create_app():
         # 创建所有数据库表
         db.create_all()
     
+    # 统一错误处理
+    from app.utils.common import format_response  # 导入统一响应格式化函数
+    
     # 注册使用Blueprint的API
     # Blueprint是Flask中组织路由的方式，用于将相关路由分组
     from app.api.like_api import like_bp  # 点赞相关API
@@ -198,15 +219,20 @@ def create_app():
     restx_api.add_namespace(exercise_api_module.exercise_ns, path='/api/exercise')  # 运动记录API路径: /api/exercise
     restx_api.add_namespace(health_api_module.health_ns, path='/api/health')  # 健康相关API路径: /api/health
     
-    # 统一错误处理
-    from app.utils.common import format_response  # 导入统一响应格式化函数
-    
     @app.errorhandler(404)
     def not_found(error):
         """
         处理404错误（资源不存在）
-        否则返回统一的404错误响应
+        根路径返回API服务信息，其他返回404
         """
+        from flask import request
+        if request.path == '/':
+            return format_response(data={
+                "service": "健康饮食管理系统API",
+                "version": "1.0.0",
+                "status": "running",
+                "docs": "/api/docs"
+            })
         return format_response(404, "资源不存在")
     
     @app.errorhandler(500)
