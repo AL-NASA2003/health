@@ -165,14 +165,9 @@ Page({
         if (Object.keys(updateData).length > 0) {
           this.setData(updateData);
         }
-        
-        // 获取饮水和运动记录数据
-        this.getTodayWaterAndExerciseStats();
       })
       .catch(() => {
         // 保持默认数据，不做任何处理
-        // 获取饮水和运动记录数据
-        this.getTodayWaterAndExerciseStats();
       });
   },
 
@@ -187,31 +182,6 @@ Page({
       .catch(() => {});
     
     this.getTodayDietStats();
-    this.getTodayWaterAndExerciseStats();
-  },
-
-  getTodayWaterAndExerciseStats() {
-    const today = new Date().toISOString().split('T')[0];
-    
-    // 获取饮水记录
-    const waterData = wx.getStorageSync(`water_${today}`);
-    const totalWater = waterData?.totalAmount || 0;
-    
-    // 获取运动记录
-    const exerciseData = wx.getStorageSync(`exercise_${today}`);
-    const exerciseRecords = exerciseData?.records || [];
-    
-    // 计算运动总时间
-    let totalExerciseDuration = 0;
-    exerciseRecords.forEach(record => {
-      totalExerciseDuration += record.duration || 0;
-    });
-    
-    // 更新数据
-    this.setData({
-      waterAmount: totalWater,
-      exerciseDuration: totalExerciseDuration
-    });
   },
 
   setCurrentDate() {

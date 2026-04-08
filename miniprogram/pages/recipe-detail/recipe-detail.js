@@ -30,9 +30,6 @@ Page({
         recipe: cachedData.data,
         loading: false
       });
-    } else {
-      // 没有缓存，显示加载状态
-      this.setData({ loading: true });
     }
     
     // 静默请求最新数据
@@ -43,16 +40,12 @@ Page({
             recipe: result.data,
             loading: false
           });
-        } else {
-          // 如果没有数据，隐藏加载状态
-          this.setData({ loading: false });
         }
       })
       .catch((err) => {
         console.error('获取食谱详情失败：', err);
-        // 隐藏加载状态
-        this.setData({ loading: false });
         if (!cachedData) {
+          this.setData({ loading: false });
           wx.showToast({ title: '获取食谱详情失败', icon: 'none' });
         }
       });

@@ -58,32 +58,6 @@ Page({
   loadAllRecords() {
     const today = new Date().toISOString().split('T')[0];
     
-    // 从数据库获取饮食统计记录
-    const { get, post } = require('../../utils/request');
-    get(`/health/stat/${today}`, {}, false)
-      .then((result) => {
-        if (result && result.data) {
-          const record = result.data;
-          this.setData({
-            totalCalories: record.total_calories,
-            totalWater: record.total_water,
-            totalExerciseCalories: record.total_exercise_calories,
-            totalExerciseDuration: record.total_exercise_duration,
-            netCalories: record.net_calories
-          });
-        } else {
-          // 从本地存储获取数据
-          this.loadLocalRecords(today);
-        }
-      })
-      .catch((err) => {
-        console.error('获取饮食统计记录失败：', err);
-        // 从本地存储获取数据
-        this.loadLocalRecords(today);
-      });
-  },
-
-  loadLocalRecords(today) {
     // 加载饮食记录
     const dietData = wx.getStorageSync(`diet_${today}`);
     const dietRecords = dietData?.records || [];
@@ -99,14 +73,8 @@ Page({
     
     // 计算总热量
     let totalCalories = 0;
-    let totalProtein = 0;
-    let totalCarb = 0;
-    let totalFat = 0;
     dietRecords.forEach(record => {
       totalCalories += record.calories || 0;
-      totalProtein += record.protein || 0;
-      totalCarb += record.carb || 0;
-      totalFat += record.fat || 0;
     });
     
     // 计算运动总热量消耗
@@ -130,30 +98,6 @@ Page({
       totalExerciseDuration: totalExerciseDuration,
       netCalories: netCalories
     });
-    
-    // 保存到数据库
-    const { post } = require('../../utils/request');
-    post('/health/stat', {
-      record_date: today,
-      total_calories: totalCalories,
-      total_protein: totalProtein,
-      total_carb: totalCarb,
-      total_fat: totalFat,
-      total_water: totalWater,
-      total_exercise_duration: totalExerciseDuration,
-      total_exercise_calories: totalExerciseCalories,
-      net_calories: netCalories
-    }, false)
-      .then((result) => {
-        if (result && result.code === 0) {
-          console.log('饮食统计记录保存成功');
-        } else {
-          console.error('饮食统计记录保存失败：', result);
-        }
-      })
-      .catch((err) => {
-        console.error('饮食统计记录保存失败：', err);
-      });
   },
 
   calculateHealth() {

@@ -37,7 +37,7 @@
       bindtap="switchTab" 
       data-tab="diet"
     >
-      <text>饮食记录</text>
+      <text>我的记录</text>
     </view>
     <view 
       class="nav-item {{currentTab === 'water' ? 'active' : ''}}" 

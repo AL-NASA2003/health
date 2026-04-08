@@ -138,5 +138,12 @@
         </view>
       </view>
     </view>
+
+
+
+    <!-- 添加按钮 -->
+    <view class="add-btn" bindtap="goToAddDiet">
+      <image class="add-icon" src="/images/icon/like.png"></image>
+    </view>
   </view>
 </view>

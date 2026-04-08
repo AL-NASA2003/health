@@ -111,7 +111,7 @@ def generate_image():
                 api_url,
                 headers=headers,
                 json=payload,
-                timeout=8
+                timeout=12
             )
             
             if response.status_code == 200:

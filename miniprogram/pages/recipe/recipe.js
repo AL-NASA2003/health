@@ -218,59 +218,23 @@ Page({
       return;
     }
 
-    // 显示加载提示
-    wx.showLoading({ title: '推荐中...' });
-
-    // 获取个性化推荐 - 正确的API路径是 /recommend/recipe
-    post('/recommend/recipe', {}, false)
+    // 不显示 loading 弹窗，静默更新
+    post('/recipe/recommend', {}, false)
       .then((result) => {
-        wx.hideLoading();
-        console.log('推荐API返回结果：', result);
-        // 兼容两种返回格式：直接在data中或者在data.recommend_list中
-        let recommendList = [];
         if (result && result.data) {
-          if (result.data.recommend_list) {
-            recommendList = result.data.recommend_list;
-          } else if (Array.isArray(result.data.list)) {
-            recommendList = result.data.list;
-          } else if (Array.isArray(result.data)) {
-            recommendList = result.data;
-          }
-        }
-        
-        if (recommendList && recommendList.length > 0) {
-          // 处理推荐列表，确保数据格式正确
-          const processedList = recommendList.map(item => ({
-            id: item.recipe_id || item.id,
-            recipe_name: item.recipe_name || item.name,
-            calorie: item.calorie,
-            protein: item.protein,
-            carb: item.carb,
-            fat: item.fat,
-            flavor: item.flavor || '',
-            cook_step: item.cook_step || '',
-            ingre_list: item.ingre_list || '',
-            cook_type: item.cook_type || '',
-            suitable_crowd: item.suitable_crowd || '',
-            image: item.image || ''
-          }));
-          
           this.setData({
-            recipeList: processedList,
-            filteredList: processedList,
+            recipeList: result.data.recommend_list || [],
+            filteredList: result.data.recommend_list || [],
             hasRecommend: true,
-            nutritionNeeds: result.data.nutrition_needs || null,
-            dailyMealPlan: result.data.daily_meal_plan || null
+            nutritionNeeds: result.data.nutrition_needs,
+            dailyMealPlan: result.data.daily_meal_plan
           });
           wx.showToast({ title: '推荐成功' });
-        } else {
-          wx.showToast({ title: '推荐失败，请重试', icon: 'none' });
         }
       })
       .catch((err) => {
-        wx.hideLoading();
         console.error('获取推荐食谱失败：', err);
-        wx.showToast({ title: '推荐失败，请检查网络', icon: 'none' });
+        // 保持默认数据，不做任何处理
       });
   },
 

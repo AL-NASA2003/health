@@ -1,4 +1,4 @@
-const { get, post, del, clearRequestCache } = require('../../utils/request');
+const { get, post, del } = require('../../utils/request');
 const { loginGuard } = require('../../utils/auth');
 
 Page({
@@ -117,7 +117,7 @@ Page({
         wx.hideLoading();
         try {
           const data = JSON.parse(res.data);
-          if (data.code === 0 && data.data && data.data.url) {
+          if (data.code === 200 && data.data && data.data.url) {
             this.setData({
               'formData.image': data.data.url
             });
@@ -140,7 +140,7 @@ Page({
 
   // 提交表单
   submitForm() {
-    const { formData, postList } = this.data;
+    const { formData } = this.data;
     
     if (!formData.title) {
       wx.showToast({ title: '请输入标题', icon: 'none' });
@@ -151,36 +151,15 @@ Page({
       return;
     }
 
-    // 先在前端显示，提升用户体验
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    
-    const newPost = {
-      id: Date.now(),
-      title: formData.title,
-      content: formData.content,
-      image: formData.image,
-      create_time: timeStr,
-      views: 0,
-      likes: 0,
-      is_liked: false,
-      is_collected: false,
-      is_top: false
-    };
-    
-    const updatedList = [newPost, ...postList];
-    this.setData({ postList: updatedList });
-    this.hideDialog();
-    wx.showToast({ title: '发布成功' });
-    
-    // 异步写入后端，不刷新页面
-    post('/forum/add', formData, false, false)
+    post('/forum/add', formData)
       .then(() => {
-        clearRequestCache(); // 清除缓存
+        wx.showToast({ title: '发布成功' });
+        this.hideDialog();
+        this.getPostList();
       })
       .catch((err) => {
         console.error('发布帖子失败：', err);
-        wx.showToast({ title: '网络同步失败', icon: 'none' });
+        wx.showToast({ title: '发布失败', icon: 'none' });
       });
   },
 
@@ -201,21 +180,14 @@ Page({
       content: '确定要删除该帖子吗？',
       success: (res) => {
         if (res.confirm) {
-          // 先在前端删除，提升用户体验
-          const updatedList = this.data.postList.filter(item => item.id !== id);
-          this.setData({ postList: updatedList });
-          wx.showToast({ title: '删除成功' });
-          
-          // 异步调用后端删除
-          del(`/forum/delete/${id}`, {}, false, false)
+          del(`/forum/delete/${id}`)
             .then(() => {
-              clearRequestCache(); // 清除缓存
+              wx.showToast({ title: '删除成功' });
+              this.getPostList();
             })
             .catch((err) => {
               console.error('删除帖子失败：', err);
-              // 如果后端删除失败，恢复数据
-              this.getPostList();
-              wx.showToast({ title: '网络同步失败', icon: 'none' });
+              wx.showToast({ title: '删除失败', icon: 'none' });
             });
         }
       }
