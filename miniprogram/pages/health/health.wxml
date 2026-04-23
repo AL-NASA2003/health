@@ -21,6 +21,17 @@
         </picker>
       </view>
     </view>
+    
+    <view class="form-item activity-item">
+      <text class="form-label">活动水平</text>
+      <picker mode="selector" range="{{activityOptions}}" range-key="name" value="{{activityIndex}}" bindchange="onActivityChange">
+        <view class="form-picker">
+          {{activityOptions[activityIndex].name}}
+          <text class="activity-desc">{{activityOptions[activityIndex].desc}}</text>
+        </view>
+      </picker>
+    </view>
+    
     <button class="calculate-btn" bindtap="calculateHealth">计算健康指数</button>
   </view>
 
@@ -54,24 +65,25 @@
           <view class="metric-label">基础代谢(大卡)</view>
         </view>
         <view class="metric-item">
-          <view class="metric-value">{{idealWeight}}</view>
-          <view class="metric-label">理想体重(kg)</view>
+          <view class="metric-value">{{tdee}}</view>
+          <view class="metric-label">总消耗(大卡)</view>
         </view>
         <view class="metric-item">
-          <view class="metric-value">{{dailyCalories}}</view>
-          <view class="metric-label">每日推荐(大卡)</view>
+          <view class="metric-value">{{bodyFat}}%</view>
+          <view class="metric-label">体脂率</view>
+        </view>
+        <view class="metric-item">
+          <view class="metric-value">{{idealWeight}}</view>
+          <view class="metric-label">理想体重(kg)</view>
         </view>
       </view>
     </view>
   </view>
 
-  <view class="tips-section">
+  <view wx:if="{{showResult}}" class="tips-section">
     <view class="section-title">健康建议</view>
     <view class="tips-content">
-      <text>📊 BMI = 体重(kg) ÷ 身高²(m²)</text>
-      <text>🎯 正常BMI范围：18.5 - 23.9</text>
-      <text>💡 基础代谢是人体维持生命所需的最低能量</text>
-      <text>🏃 每日热量摄入需结合活动量调整</text>
+      <view wx:for="{{healthTips}}" wx:key="index" class="tip-item">{{item}}</view>
     </view>
   </view>
 

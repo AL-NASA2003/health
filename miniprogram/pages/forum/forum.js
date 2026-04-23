@@ -151,23 +151,57 @@ Page({
       return;
     }
 
+    // 乐观更新UI
+    const newPost = {
+      id: Date.now(),
+      title: formData.title,
+      content: formData.content,
+      image: formData.image,
+      is_liked: false,
+      is_collected: false,
+      likes: 0,
+      collects: 0,
+      comments: 0,
+      create_time: new Date().toLocaleString(),
+      user: {
+        nickname: '我',
+        avatar: ''
+      }
+    };
+    const newList = [newPost, ...this.data.postList];
+    this.setData({ postList: newList });
+    this.hideDialog();
+
     post('/forum/add', formData)
       .then(() => {
         wx.showToast({ title: '发布成功' });
-        this.hideDialog();
         this.getPostList();
       })
       .catch((err) => {
         console.error('发布帖子失败：', err);
         wx.showToast({ title: '发布失败', icon: 'none' });
+        // 失败回滚
+        this.getPostList();
       });
   },
 
   // 查看帖子详情
   viewPostDetail(e) {
     const postId = e.currentTarget.dataset.id;
+    if (!postId) {
+      wx.showToast({ title: '帖子不存在', icon: 'none' });
+      return;
+    }
+    console.log('跳转到帖子详情:', postId);
     wx.navigateTo({
-      url: `/pages/forum/detail/detail?id=${postId}`
+      url: `/pages/forum/detail/detail?id=${postId}`,
+      success: () => {
+        console.log('跳转成功');
+      },
+      fail: (err) => {
+        console.error('跳转失败:', err);
+        wx.showToast({ title: '打开失败', icon: 'none' });
+      }
     });
   },
 
@@ -199,25 +233,44 @@ Page({
     const id = e.currentTarget.dataset.id;
     const isLiked = e.currentTarget.dataset.liked;
     
+    // 先乐观更新UI
+    const newPostList = this.data.postList.map(post => {
+      if (post.id === id) {
+        return {
+          ...post,
+          is_liked: !isLiked,
+          likes: isLiked ? Math.max(0, (post.likes || 0) - 1) : (post.likes || 0) + 1
+        };
+      }
+      return post;
+    });
+    this.setData({ postList: newPostList });
+    
     if (isLiked) {
       post(`/forum/unlike/${id}`)
         .then(() => {
           wx.showToast({ title: '取消点赞成功' });
-          this.getPostList();
         })
         .catch((err) => {
           console.error('取消点赞失败：', err);
+          // 失败回滚
+          this.getPostList();
           wx.showToast({ title: '操作失败', icon: 'none' });
         });
     } else {
       post(`/forum/like/${id}`)
         .then(() => {
           wx.showToast({ title: '点赞成功' });
-          this.getPostList();
         })
         .catch((err) => {
           console.error('点赞失败：', err);
-          wx.showToast({ title: '操作失败', icon: 'none' });
+          // 失败回滚
+          this.getPostList();
+          if (err.data && err.data.code === 400 && err.data.msg === '已经点赞过了') {
+            // 已点赞过，不显示错误
+          } else {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          }
         });
     }
   },
@@ -227,25 +280,44 @@ Page({
     const id = e.currentTarget.dataset.id;
     const isCollected = e.currentTarget.dataset.collected;
     
+    // 先乐观更新UI
+    const newPostList = this.data.postList.map(post => {
+      if (post.id === id) {
+        return {
+          ...post,
+          is_collected: !isCollected,
+          collects: isCollected ? Math.max(0, (post.collects || 0) - 1) : (post.collects || 0) + 1
+        };
+      }
+      return post;
+    });
+    this.setData({ postList: newPostList });
+    
     if (isCollected) {
       post(`/forum/uncollect/${id}`)
         .then(() => {
           wx.showToast({ title: '取消收藏成功' });
-          this.getPostList();
         })
         .catch((err) => {
           console.error('取消收藏失败：', err);
+          // 失败回滚
+          this.getPostList();
           wx.showToast({ title: '操作失败', icon: 'none' });
         });
     } else {
       post(`/forum/collect/${id}`)
         .then(() => {
           wx.showToast({ title: '收藏成功' });
-          this.getPostList();
         })
         .catch((err) => {
           console.error('收藏失败：', err);
-          wx.showToast({ title: '操作失败', icon: 'none' });
+          // 失败回滚
+          this.getPostList();
+          if (err.data && err.data.code === 400 && err.data.msg === '已经收藏过了') {
+            // 已收藏过，不显示错误
+          } else {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          }
         });
     }
   }

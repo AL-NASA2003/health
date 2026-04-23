@@ -26,9 +26,9 @@ const CACHE_CONFIG = {
 
 // 请求配置对象
 const REQUEST_CONFIG = {
-  DEFAULT_TIMEOUT: 8000,             // 默认请求超时时间（8秒）
-  MAX_RETRIES: 2,                    // 最大重试次数
-  RETRY_DELAY: 1000                  // 重试延迟时间（1秒）
+  DEFAULT_TIMEOUT: 5000,             // 默认请求超时时间（5秒）- 开发者工具使用更短的超时
+  MAX_RETRIES: 1,                    // 最大重试次数（减少到1次）
+  RETRY_DELAY: 500                   // 重试延迟时间（0.5秒）
 };
 
 /**

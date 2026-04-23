@@ -52,6 +52,18 @@
   border-radius: 10rpx;
   font-size: 28rpx;
   color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 5rpx;
+}
+
+.activity-item {
+  margin-bottom: 30rpx;
+}
+
+.activity-desc {
+  font-size: 22rpx;
+  color: #999;
 }
 
 .calculate-btn {
@@ -161,7 +173,7 @@
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20rpx;
 }
 
@@ -191,6 +203,16 @@
   display: flex;
   flex-direction: column;
   gap: 15rpx;
+}
+
+.tip-item {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  padding: 15rpx;
+  background-color: #f8f9fa;
+  border-radius: 10rpx;
+  border-left: 4rpx solid #667eea;
 }
 
 .tips-content text {

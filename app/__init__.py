@@ -179,6 +179,7 @@ def create_app():
     from app.api.remove_bg_api import remove_bg_bp  # 图像抠图相关API
     from app.api.nutrition_api import nutrition_bp  # 营养计算相关API
     from app.api.ai_assistant_api import ai_assistant_bp  # AI助手相关API
+    from app.api.ocr_api import ocr_bp  # OCR文字识别相关API
     
     # 注册Blueprint到应用，并设置URL前缀
     app.register_blueprint(like_bp, url_prefix="/api/like")  # 点赞API路径: /api/like
@@ -192,6 +193,7 @@ def create_app():
     app.register_blueprint(remove_bg_bp, url_prefix="/api/removebg")  # 图像抠图API路径: /api/removebg
     app.register_blueprint(nutrition_bp, url_prefix="/api/nutrition")  # 营养计算API路径: /api/nutrition
     app.register_blueprint(ai_assistant_bp, url_prefix="/api/ai")  # AI助手API路径: /api/ai
+    app.register_blueprint(ocr_bp, url_prefix="/api/ocr")  # OCR文字识别API路径: /api/ocr
     
     # 导入并注册使用restx命名空间的API
     # 动态导入模块，避免循环导入问题
@@ -251,9 +253,8 @@ def create_app():
         """
         return format_response(400, "请求参数错误")
     
-    # 启动定时任务（每半小时爬取一次小红书热点美食）
-    # 暂时禁用爬虫任务，以便服务能够正常运行
-    if False and not os.environ.get('DISABLE_SCHEDULER'):
+    # 启动定时任务（每2小时爬取一次小红书热点美食）
+    if not os.environ.get('DISABLE_SCHEDULER'):
         from app.crawler.xhs_drission_crawler import crawl_xhs_hot_food  # 导入爬虫函数
         import threading
         from loguru import logger
@@ -277,7 +278,7 @@ def create_app():
         scheduler.start()
         logger.info("定时任务已启动，每2小时执行一次爬取任务")
     else:
-        logger.info("爬虫任务已禁用，服务将正常运行")
+        logger.info("⏭️  爬虫任务已禁用，服务快速启动模式")
     
     # 启用 HTTPS 强制和安全头
     # 本地开发环境禁用 HTTPS 强制，生产环境启用

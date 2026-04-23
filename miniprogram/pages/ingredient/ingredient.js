@@ -210,15 +210,26 @@ Page({
     } 
     // 添加模式
     else {
+      // 乐观更新UI
+      const newIngredient = {
+        id: Date.now(),
+        ...params,
+        create_time: new Date().toISOString()
+      };
+      const newList = [newIngredient, ...this.data.ingredientList];
+      this.setData({ ingredientList: newList });
+      this.hideDialog();
+      
       post('/ingredient', params)
         .then(() => {
           wx.showToast({ title: '添加成功' });
-          this.hideDialog();
           this.getIngredientList();
         })
         .catch((err) => {
           console.error('添加食材失败：', err);
           wx.showToast({ title: '添加失败', icon: 'none' });
+          // 失败回滚
+          this.getIngredientList();
         });
     }
   },

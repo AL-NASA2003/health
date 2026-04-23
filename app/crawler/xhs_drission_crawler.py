@@ -29,13 +29,15 @@ class XHSDrissionCrawler:
         self.force_login = force_login
         self.user_agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15.7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15.7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
         ]
         if DrissionPage_available:
             try:
+                logger.info(f"初始化浏览器...")
                 self.page = self._init_page()
+                logger.info(f"浏览器已启动！")
                 if self.cookies:
                     self._set_cookies()
                 elif self.force_login:
@@ -43,8 +45,14 @@ class XHSDrissionCrawler:
                     logger.info("强制登录中...")
                     if not self.login():
                         logger.error("登录失败，无法继续爬取")
+                else:
+                    # 不强制登录，但先访问主页
+                    logger.info("访问小红书主页...")
+                    self.page.get("https://www.xiaohongshu.com")
             except Exception as e:
                 logger.error(f"页面初始化失败：{str(e)}")
+                import traceback
+                logger.error(traceback.format_exc())
                 # 不抛出异常，让上层处理
         else:
             logger.warning("DrissionPage不可用，跳过页面初始化")
@@ -62,32 +70,11 @@ class XHSDrissionCrawler:
         return None
     
     def _init_page(self):
-        """初始化DrissionPage，优化Chrome启动速度"""
+        """初始化DrissionPage"""
         # 随机选择 User-Agent
         user_agent = random.choice(self.user_agents)
-        # 创建页面对象，添加优化参数
-        page = ChromiumPage(
-            # 使用无头模式加速启动
-            # headless=True,  # 可选：如果不需要可视化可以启用
-            # 添加启动参数加速
-            browser_args=[
-                '--no-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-gpu',
-                '--disable-software-rasterizer',
-                '--disable-extensions',
-                '--disable-default-apps',
-                '--no-first-run',
-                '--no-default-browser-check',
-                '--disable-infobars',
-                '--disable-notifications',
-                '--disable-popup-blocking',
-                '--disable-translate',
-                '--disable-web-security',
-                '--disable-features=IsolateOrigins,site-per-process',
-                '--blink-settings=imagesEnabled=false',  # 禁用图片加载加速
-            ]
-        )
+        # 创建页面对象
+        page = ChromiumPage()
         # 设置User-Agent
         page.set.user_agent(user_agent)
         # 设置页面加载超时时间
@@ -284,16 +271,35 @@ class XHSDrissionCrawler:
                     "tags": tags,
                     "images": images,
                     "comments_list": [],  # 预留评论列表字段
-                    "image_description": ""  # 预留图片描述字段
+                    "image_description": "",  # 预留图片描述字段
+                    "food_type": "其他",  # 预留食物分类字段
+                    "cuisine": "",  # 预留菜系字段
+                    "ingredients": [],  # 预留食材字段
+                    "nutrition": None  # 预留营养信息字段
                 }
                 
-                # 尝试识别图片内容（已禁用）
+                # 使用GLM-4.6V-Flash识别图片内容
                 if images:
                     try:
-                        # 图片识别功能已禁用
-                        logger.info(f"图片识别功能已禁用，跳过：{images[0][:50]}...")
+                        from app.utils.zhipuai_client import get_zhipuai_client
+                        client = get_zhipuai_client()
+                        
+                        # 使用第一张图片进行识别
+                        image_url = images[0]
+                        logger.info(f"开始使用GLM-4.6V-Flash识别图片：{image_url[:50]}...")
+                        
+                        analysis_result = client.analyze_food_image(image_url=image_url)
+                        
+                        if analysis_result:
+                            hot_item["image_description"] = analysis_result.get("food_name", title)
+                            hot_item["food_type"] = analysis_result.get("food_type", "其他")
+                            hot_item["cuisine"] = analysis_result.get("cuisine", "")
+                            hot_item["ingredients"] = analysis_result.get("ingredients", [])
+                            hot_item["nutrition"] = analysis_result.get("nutrition_estimate", None)
+                            
+                            logger.info(f"图片识别成功：{analysis_result.get('food_name')} ({analysis_result.get('food_type')})")
                     except Exception as e:
-                        logger.warning(f"图片处理失败：{str(e)}")
+                        logger.warning(f"图片识别失败：{str(e)}")
                 
                 logger.info(f"成功解析笔记：{title}")
                 return hot_item
@@ -770,7 +776,7 @@ def crawl_xhs_hot_food(force_login=False, manual=False):
                 processed_items, statistics = process_food_data(hot_items)
                 logger.info(f"数据处理完成，统计信息：{statistics}")
                 
-                # 清空旧数据
+                # 保存原始数据到真实数据库
                 HotFood.query.delete()
                 
                 for index, item in enumerate(processed_items):
@@ -787,30 +793,52 @@ def crawl_xhs_hot_food(force_login=False, manual=False):
                         elif item.get('author_avatar'):
                             image = item['author_avatar']
                         
+                        # 准备图片识别结果的 JSON 字段
+                        ingredients_json = json.dumps(item.get('ingredients', []), ensure_ascii=False)
+                        nutrition_json = json.dumps(item.get('nutrition', {}), ensure_ascii=False) if item.get('nutrition') else ""
+                        
                         # 创建热点美食记录
                         hot_food = HotFood(
-                            food_name=item.get('title', '其他'),  # 使用标题作为美食名称
-                            ingre_list=item['title'],  # 使用标题作为食材列表（实际需要解析详情页）
+                            food_name=item.get('image_description', item.get('title', '其他')),  # 使用AI识别的名称
+                            ingre_list=item['title'],
                             link=item['link'],
-                            hot_score=item.get('hotness_score', item.get('likes', 0)),  # 使用计算后的热度评分
+                            hot_score=item.get('hotness_score', item.get('likes', 0)),
                             source="小红书",
                             tags=json.dumps(tags),
-                            image=image,  # 使用爬取的图片
-                            description=item.get('image_description', item['title']),  # 使用图片描述或标题作为描述
+                            image=image,
+                            description=item.get('image_description', item['title']),
                             comments=item.get('comments', 0),
                             collection=item.get('collection', 0),
-                            create_time=datetime.now()
+                            create_time=datetime.now(),
+                            image_description=item.get('image_description', ''),
+                            food_type=item.get('food_type', '其他'),
+                            cuisine=item.get('cuisine', ''),
+                            ingredients=ingredients_json,
+                            nutrition=nutrition_json,
+                            is_healthy=item.get('is_healthy', True),
+                            health_rating=item.get('health_rating', 3)
                         )
                         hot_food.save()
-                        logger.info(f"成功保存热点美食：{item['title']} (分类：{item.get('food_type', '其他')})")
+                        logger.info(f"✅ 成功保存热点美食：{item['title']} (分类：{item.get('food_type', '其他')})")
                         
                     except Exception as e:
                         logger.warning(f"解析第{index}个热点美食失败：{str(e)}")
                         continue
                 
-                logger.info(f"小红书热点美食爬取完成，共{len(processed_items)}条")
+                logger.info(f"✅ 原始数据已保存到真实数据库，共{len(processed_items)}条")
                 logger.info(f"菜品分布：{statistics.get('food_distribution', {})}")
                 logger.info(f"热门关键词：{statistics.get('top_keywords', {})}")
+                
+                # AI筛选并同步到本地数据库
+                logger.info("🤖 开始AI筛选和数据同步...")
+                try:
+                    from app.dual_db import DataSynchronizer
+                    DataSynchronizer.sync_hot_foods_to_local()
+                    logger.info("✅ AI筛选和数据同步完成！")
+                except ImportError as e:
+                    logger.warning(f"⚠️  未找到同步模块，跳过同步: {e}")
+                except Exception as e:
+                    logger.warning(f"⚠️  数据同步失败: {e}")
             
     except Exception as e:
         logger.error(f"小红书爬虫执行失败：{str(e)}")

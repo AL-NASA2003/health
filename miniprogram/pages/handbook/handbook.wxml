@@ -87,14 +87,47 @@
   <view wx:if="{{showAIDialog}}" class="dialog-overlay">
     <view class="dialog-content ai-dialog">
       <view class="dialog-header">
-        <text class="dialog-title">🎨 智谱AI - 图像生成</text>
+        <text class="dialog-title">🎨 CogView-3-Flash - 手账图片生成</text>
         <button bindtap="hideAIGenerateDialog" class="dialog-close">×</button>
       </view>
       <view class="dialog-body">
+        <!-- 快速提示词 -->
+        <view class="form-item">
+          <text class="form-label">快速选择</text>
+          <view class="quick-prompts">
+            <view wx:for="{{quickPrompts}}" wx:key="*this" bindtap="selectQuickPrompt" data-prompt="{{item}}" class="quick-prompt-item">
+              {{item}}
+            </view>
+          </view>
+        </view>
+        
+        <!-- 图像描述 -->
         <view class="form-item">
           <text class="form-label">图像描述</text>
           <textarea bindinput="onAIPromptInput" value="{{aiPrompt}}" placeholder="例如：一盘美味的红烧肉，香气扑鼻，色泽诱人" class="form-textarea ai-textarea" />
         </view>
+        
+        <!-- 风格选择 -->
+        <view class="form-item">
+          <text class="form-label">绘画风格</text>
+          <picker mode="selector" range="{{aiStyles}}" range-key="name" value="{{aiStyleIndex}}" bindchange="onStyleChange">
+            <view class="form-picker style-picker">
+              {{aiStyles[aiStyleIndex].name}}
+            </view>
+          </picker>
+        </view>
+        
+        <!-- 心情选择 -->
+        <view class="form-item">
+          <text class="form-label">心情氛围</text>
+          <picker mode="selector" range="{{aiMoods}}" range-key="name" value="{{aiMoodIndex}}" bindchange="onMoodChange">
+            <view class="form-picker mood-picker">
+              {{aiMoods[aiMoodIndex].name}}
+            </view>
+          </picker>
+        </view>
+        
+        <!-- 图像尺寸 -->
         <view class="form-item">
           <text class="form-label">图像尺寸</text>
           <picker mode="selector" range="{{aiSizes}}" value="{{aiSizeIndex}}" bindchange="onAISizeChange">
@@ -103,9 +136,13 @@
             </view>
           </picker>
         </view>
+        
+        <!-- 生成中提示 -->
         <view wx:if="{{generatingImage}}" class="generating-tip">
-          <loading>正在快速生成图像...</loading>
+          <loading>正在使用CogView-3-Flash快速生成...</loading>
         </view>
+        
+        <!-- 生成结果预览 -->
         <view wx:if="{{generatedImage}}" class="generated-preview">
           <text class="generated-label">生成结果：</text>
           <image src="{{generatedImage}}" class="generated-image" mode="aspectFill" />
@@ -115,7 +152,7 @@
       <view class="dialog-footer">
         <button bindtap="hideAIGenerateDialog" class="dialog-btn cancel-btn">取消</button>
         <button bindtap="generateAIImage" class="dialog-btn confirm-btn" disabled="{{generatingImage}}">
-          {{generatingImage ? '生成中...' : '生成图像'}}
+          {{generatingImage ? '生成中...' : '✨ 生成手账图片'}}
         </button>
       </view>
     </view>

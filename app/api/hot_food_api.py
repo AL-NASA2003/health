@@ -37,6 +37,7 @@ def manual_crawl():
         try:
             from DrissionPage import ChromiumPage
             drission_available = True
+            logger.info("DrissionPage 可用，将使用真实爬取")
         except ImportError:
             drission_available = False
             logger.warning("DrissionPage 未安装，将使用模拟数据")
@@ -108,18 +109,18 @@ def manual_crawl():
             
             return format_response(msg="热点美食数据已更新（模拟数据）")
         
-        # DrissionPage 可用，异步执行真实爬取
+        # DrissionPage 可用，异步执行真实爬取（强制登录）
         def crawl_task():
             try:
-                logger.info("开始异步爬取热点美食")
-                crawl_xhs_hot_food(force_login=False, manual=True)
+                logger.info("开始异步爬取热点美食（手动触发，强制登录）")
+                crawl_xhs_hot_food(force_login=True, manual=True)
                 logger.info("热点美食爬取完成")
             except Exception as e:
                 logger.error(f"异步爬取失败：{str(e)}")
         
         # 启动异步任务
         threading.Thread(target=crawl_task).start()
-        return format_response(msg="热点美食爬取任务已启动，正在后台执行")
+        return format_response(msg="Chrome浏览器已启动，请在浏览器中扫码登录，爬取任务将在后台执行")
     except Exception as e:
         logger.error(f"手动爬取失败：{str(e)}")
         return format_response(500, f"爬取失败：{str(e)}")

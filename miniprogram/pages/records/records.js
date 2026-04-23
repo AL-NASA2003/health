@@ -2,6 +2,7 @@ const { get, post, put, del } = require('../../utils/request');
 const { getUserInfo } = require('../../utils/storage');
 const { loginGuard } = require('../../utils/auth');
 const { loadMockData } = require('../../utils/mockData');
+const app = getApp();
 
 Page({
   data: {
@@ -11,6 +12,8 @@ Page({
     totalCalories: 0,
     dietList: [],
     loading: true,
+    hasError: false,
+    errorMsg: '',
     searchKey: '',
     searchSuggest: [],
     showAddDialog: false,
@@ -143,25 +146,56 @@ Page({
   calculateTotalCalories(dietList) {
     let total = 0;
     dietList.forEach(item => {
-      total += item.calorie || 0;
+      total += Number(item.calorie) || 0;
     });
-    this.setData({ totalCalories: total });
+    this.setData({ totalCalories: total.toFixed(1) });
   },
 
   getDietList() {
-    get('/diet/record', {}, false)
+    console.log('🥗 开始获取饮食记录列表...');
+    const today = new Date().toISOString().split('T')[0];
+    console.log('📅 今天日期：', today);
+    
+    get('/diet/record', { start_date: today, end_date: today }, false, false)
       .then((result) => {
+        console.log('✅ 收到API响应：', result);
+        
         if (result && result.data && result.data.list) {
           const dietList = result.data.list;
-          this.calculateTotalCalories(dietList);
-          this.setData({
-            dietList,
-            loading: false
+          console.log('📋 饮食记录列表：', dietList);
+          
+          // 处理营养数据显示为1位小数
+          const processedList = dietList.map(item => ({
+            ...item,
+            calorie: Number(item.calorie).toFixed(1),
+            protein: Number(item.protein).toFixed(1),
+            carb: Number(item.carb).toFixed(1),
+            fat: Number(item.fat).toFixed(1)
+          }));
+          
+          console.log('🔍 记录详情：');
+          processedList.forEach((item, index) => {
+            console.log(`   [${index}] id=${item.id}, name=${item.food_name}, date=${item.create_date}, calorie=${item.calorie}`);
           });
+          
+          this.calculateTotalCalories(processedList);
+          this.setData({
+            dietList: processedList,
+            loading: false,
+            hasError: false
+          });
+          
+          console.log('📊 总热量计算完成：', this.data.totalCalories);
+          console.log('✅ setData后的dietList：', this.data.dietList);
+          console.log('✅ setData后的dietList.length：', this.data.dietList.length);
+        } else {
+          console.warn('⚠️ API返回数据格式不正确');
+          this.loadMockData();
         }
       })
       .catch((err) => {
-        console.error('获取饮食记录失败：', err);
+        console.error('❌ 获取饮食记录失败：', err);
+        this.setData({ hasError: true, errorMsg: '加载失败，请重试' });
         this.loadMockData();
       });
   },
@@ -292,7 +326,7 @@ Page({
   },
 
   submitDietRecord() {
-    const { formData, foodTypes, mealTimes, isEdit, editRecordId } = this.data;
+    const { formData, foodTypes, mealTimes, isEdit, editRecordId, dietList } = this.data;
     
     if (!formData.foodName) {
       wx.showToast({ title: '请输入食材名称', icon: 'none' });
@@ -327,47 +361,131 @@ Page({
       params.ingredient_id = formData.ingredientId;
     }
     
+    // 乐观更新：先更新本地数据
     if (isEdit && editRecordId) {
+      console.log('✏️ 更新饮食记录，ID：', editRecordId);
+      const updatedList = dietList.map(item => {
+        if (item.id === editRecordId) {
+          return { ...item, ...params };
+        }
+        return item;
+      });
+      this.setData({ dietList: updatedList });
+      this.calculateTotalCalories(updatedList);
+      this.hideAddDialog();
+      
       put(`/diet/record/${editRecordId}`, params)
         .then((result) => {
-          wx.showToast({ title: '更新成功' });
-          this.hideAddDialog();
-          this.getDietList();
+          console.log('✅ 更新饮食记录响应：', result);
+          wx.showToast({ title: '更新成功', icon: 'success' });
+          
+          // 延迟一点再获取列表，确保数据保存成功
+          setTimeout(() => {
+            this.getDietList();
+            // 标记饮食数据已变更，通知首页刷新
+            app.markDataChanged('diet');
+            console.log('📡 已发送数据变更事件');
+            
+            // 直接获取首页页面实例，强制刷新（更可靠！）
+            const pages = getCurrentPages();
+            const prevPage = pages[pages.length - 2]; // 获取上一页
+            
+            if (prevPage && prevPage.route === 'pages/index/index') {
+              console.log('🔄 直接调用首页刷新方法！');
+              // 直接调用首页的刷新方法
+              if (prevPage.refreshData) {
+                prevPage.refreshData();
+              } else if (prevPage.getTodayDietStats) {
+                prevPage.getTodayDietStats();
+              }
+            }
+          }, 300);
         })
         .catch((err) => {
-          console.error('更新饮食记录失败：', err);
+          console.error('❌ 更新饮食记录失败：', err);
           wx.showToast({ title: '更新失败', icon: 'none' });
+          this.getDietList(); // 失败回滚
         });
     } else {
+      console.log('➕ 添加新饮食记录');
+      const newItem = {
+        id: Date.now(),
+        food_name: formData.foodName,
+        food_type: foodTypes[formData.foodTypeIndex],
+        meal_time: mealTimes[formData.mealTimeIndex],
+        weight: weight,
+        ingredient_id: formData.ingredientId || null,
+        calorie: weight * 0.3, // 估算值
+        protein: weight * 0.02,
+        carb: weight * 0.04,
+        fat: weight * 0.01,
+        create_time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      };
+      const updatedList = [newItem, ...dietList];
+      this.setData({ dietList: updatedList });
+      this.calculateTotalCalories(updatedList);
+      this.hideAddDialog();
+      
       post('/diet/record', params)
         .then((result) => {
-          wx.showToast({ title: '添加成功' });
-          this.hideAddDialog();
-          this.getDietList();
+          console.log('✅ 添加饮食记录响应：', result);
+          wx.showToast({ title: '添加成功', icon: 'success' });
+          
+          // 延迟一点再获取列表，确保数据保存成功
+          setTimeout(() => {
+            this.getDietList();
+            // 标记饮食数据已变更，通知首页刷新
+            app.markDataChanged('diet');
+            console.log('📡 已发送数据变更事件');
+            
+            // 直接获取首页页面实例，强制刷新（更可靠！）
+            const pages = getCurrentPages();
+            const prevPage = pages[pages.length - 2]; // 获取上一页
+            
+            if (prevPage && prevPage.route === 'pages/index/index') {
+              console.log('🔄 直接调用首页刷新方法！');
+              // 直接调用首页的刷新方法
+              if (prevPage.refreshData) {
+                prevPage.refreshData();
+              } else if (prevPage.getTodayDietStats) {
+                prevPage.getTodayDietStats();
+              }
+            }
+          }, 300);
         })
         .catch((err) => {
-          console.error('添加饮食记录失败：', err);
+          console.error('❌ 添加饮食记录失败：', err);
           wx.showToast({ title: '添加失败', icon: 'none' });
+          this.getDietList(); // 失败回滚
         });
     }
   },
 
   deleteDietRecord(e) {
     const id = e.currentTarget.dataset.id;
+    const { dietList } = this.data;
     
     wx.showModal({
       title: '提示',
       content: '确定要删除这条记录吗？',
       success: (res) => {
         if (res.confirm) {
+          // 乐观更新：先从本地删除
+          const updatedList = dietList.filter(item => item.id !== id);
+          this.setData({ dietList: updatedList });
+          this.calculateTotalCalories(updatedList);
+          
           del(`/diet/record/${id}`)
             .then((result) => {
               wx.showToast({ title: '删除成功' });
               this.getDietList();
+              // 标记饮食数据已变更
+              app.markDataChanged('diet');
             })
             .catch((err) => {
               console.error('删除记录失败：', err);
               wx.showToast({ title: '删除失败', icon: 'none' });
+              this.getDietList(); // 失败回滚
             });
         }
       }
@@ -441,6 +559,9 @@ Page({
     this.updateWaterProgress();
     this.saveWaterData();
     
+    // 标记饮水数据已变更
+    app.markDataChanged('water');
+    
     wx.showToast({
       title: `已添加 ${amount}ml`,
       icon: 'success'
@@ -473,6 +594,8 @@ Page({
           waterData.totalAmount = Math.max(0, waterData.totalAmount - record.amount);
           wx.setStorageSync(`water_${today}`, waterData);
           this.loadAllRecords();
+          // 标记饮水数据已变更
+          app.markDataChanged('water');
           wx.showToast({ title: '删除成功', icon: 'success' });
         }
       }
@@ -603,6 +726,9 @@ Page({
     this.updateExerciseStats();
     this.saveExerciseData();
     
+    // 标记运动数据已变更
+    app.markDataChanged('exercise');
+    
     wx.showToast({
       title: `已记录 ${exerciseType.name} ${duration}分钟`,
       icon: 'success'
@@ -638,12 +764,22 @@ Page({
           this.updateExerciseStats();
           this.saveExerciseData();
           
+          // 标记运动数据已变更
+          app.markDataChanged('exercise');
+          
           wx.showToast({
             title: '删除成功',
             icon: 'success'
           });
         }
       }
+    });
+  },
+
+  // 跳转到登录页面
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
     });
   }
 });

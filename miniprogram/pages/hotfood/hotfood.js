@@ -165,7 +165,10 @@ Page({
           
           post('/hotfood/crawl')
             .then(() => {
-              showToast('爬取成功');
+              showToast('爬取任务已启动');
+              // 先关闭loading
+              this.setData({ loading: false });
+              // 再刷新列表
               this.getHotFoodList();
             })
             .catch((err) => {

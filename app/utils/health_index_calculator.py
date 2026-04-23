@@ -145,20 +145,12 @@ class HealthIndexCalculator:
         recipe_scores.sort(key=lambda x: x[1], reverse=True)
         
         # 返回前 10 个推荐食谱
-        return [{
-            "recipe_id": r[0].id,
-            "recipe_name": r[0].recipe_name,
-            "ingre_list": r[0].ingre_list,
-            "cook_step": r[0].cook_step,
-            "calorie": r[0].calorie,
-            "protein": r[0].protein,
-            "carb": r[0].carb,
-            "fat": r[0].fat,
-            "flavor": r[0].flavor,
-            "cook_type": r[0].cook_type,
-            "suitable_crowd": r[0].suitable_crowd,
-            "score": round(r[1], 2)
-        } for r in recipe_scores[:10]]
+        result = []
+        for r in recipe_scores[:10]:
+            recipe_dict = r[0].to_dict()
+            recipe_dict["score"] = round(r[1], 2)
+            result.append(recipe_dict)
+        return result
     
     @staticmethod
     def calculate_recipe_score(recipe, user, nutrition_needs):

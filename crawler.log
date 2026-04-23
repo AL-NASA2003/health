@@ -1,9 +1,0 @@
-2026-03-10 19:25:41,705 - xhs_crawler - INFO - 小红书热点美食爬虫启动
-2026-03-10 19:25:41,707 - xhs_crawler - INFO - 开始爬取小红书热点美食
-2026-03-10 19:25:45,752 - xhs_crawler - ERROR - 创建表失败: (2003, "Can't connect to MySQL server on 'localhost' ([WinError 10061] 由于目标计算机积极拒绝，无法连接。)")
-2026-03-10 19:25:45,775 - xhs_crawler - ERROR - 获取访问令牌异常: HTTPSConnectionPool(host='open.xiaohongshu.com', port=443): Max retries exceeded with url: /api/sns/v1/oauth/access_token (Caused by SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:997)')))
-2026-03-10 19:25:45,776 - xhs_crawler - ERROR - 无法获取访问令牌，爬取失败
-2026-03-10 19:25:45,784 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2026-03-10 19:25:45,784 - xhs_crawler - INFO - 定时任务已添加，每6小时执行一次
-2026-03-10 19:25:45,786 - apscheduler.scheduler - INFO - Added job "爬取小红书热点美食" to job store "default"
-2026-03-10 19:25:45,786 - apscheduler.scheduler - INFO - Scheduler started

@@ -465,3 +465,42 @@
   font-weight: 600;
   box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3);
 }
+
+/* 快速提示词样式 */
+.quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.quick-prompt-item {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #495057;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  border: 2rpx solid #dee2e6;
+  transition: all 0.3s ease;
+}
+
+.quick-prompt-item:active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  transform: scale(0.95);
+}
+
+/* 风格和心情选择器样式 */
+.style-picker {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  font-weight: 500;
+}
+
+.mood-picker {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  font-weight: 500;
+}

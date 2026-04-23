@@ -15,10 +15,37 @@ Page({
     },
     showAIDialog: false,
     aiPrompt: '',
-    aiSizes: ['1024x1024', '1024x1536', '1536x1024'],
+    aiSizes: ['1024x1024', '1024x1536', '1536x1024', '512x512'],
     aiSizeIndex: 0,
     generatingImage: false,
-    generatedImage: ''
+    generatedImage: '',
+    // 手账专属配置
+    aiStyles: [
+      { key: 'cute', name: '可爱风格' },
+      { key: 'watercolor', name: '水彩风格' },
+      { key: 'minimal', name: '简约风格' },
+      { key: 'retro', name: '复古风格' },
+      { key: 'food', name: '美食主题' },
+      { key: 'nature', name: '自然主题' }
+    ],
+    aiStyleIndex: 0,
+    aiMoods: [
+      { key: 'happy', name: '开心' },
+      { key: 'calm', name: '平静' },
+      { key: 'excited', name: '兴奋' },
+      { key: 'grateful', name: '感恩' },
+      { key: 'motivated', name: '励志' },
+      { key: 'sad', name: '忧郁' }
+    ],
+    aiMoodIndex: 0,
+    showStylePicker: false,
+    showMoodPicker: false,
+    // 预设快速提示词
+    quickPrompts: [
+      '健康早餐', '美味午餐', '健身打卡', '美好心情',
+      '春日风景', '夏日清凉', '秋日美食', '冬日温暖',
+      '营养沙拉', '轻食主义', '美食日记', '健康生活'
+    ]
   },
 
   // 页面加载
@@ -281,7 +308,7 @@ Page({
 
   // 提交表单
   submitForm() {
-    const { formData, isEdit } = this.data;
+    const { formData, isEdit, handbookList } = this.data;
     
     if (!formData.title) {
       wx.showToast({ title: '请输入标题', icon: 'none' });
@@ -293,26 +320,52 @@ Page({
     }
 
     if (isEdit) {
+      // 乐观更新：先更新本地数据
+      const updatedList = handbookList.map(item => {
+        if (item.id === formData.id) {
+          return { ...item, ...formData };
+        }
+        return item;
+      });
+      this.setData({ handbookList: updatedList });
+      this.hideDialog();
+      
       put(`/handbook/update/${formData.id}`, formData)
         .then(() => {
           wx.showToast({ title: '保存成功' });
-          this.hideDialog();
           this.getHandbookList();
         })
         .catch((err) => {
           console.error('更新手账失败：', err);
           wx.showToast({ title: '保存失败', icon: 'none' });
+          this.getHandbookList(); // 失败回滚
         });
     } else {
+      // 乐观更新：先添加到本地
+      const newItem = {
+        id: Date.now(),
+        title: formData.title,
+        content: formData.content,
+        image: formData.image,
+        likes: 0,
+        collects: 0,
+        isLiked: false,
+        isCollected: false,
+        createTime: new Date().toLocaleString()
+      };
+      const updatedList = [newItem, ...handbookList];
+      this.setData({ handbookList: updatedList });
+      this.hideDialog();
+      
       post('/handbook/add', formData)
         .then(() => {
           wx.showToast({ title: '添加成功' });
-          this.hideDialog();
           this.getHandbookList();
         })
         .catch((err) => {
           console.error('添加手账失败：', err);
           wx.showToast({ title: '添加失败', icon: 'none' });
+          this.getHandbookList(); // 失败回滚
         });
     }
   },
@@ -320,12 +373,17 @@ Page({
   // 删除手账
   deleteHandbook(e) {
     const id = e.currentTarget.dataset.id;
+    const { handbookList } = this.data;
     
     wx.showModal({
       title: '提示',
       content: '确定要删除该手账吗？',
       success: (res) => {
         if (res.confirm) {
+          // 乐观更新：先从本地删除
+          const updatedList = handbookList.filter(item => item.id !== id);
+          this.setData({ handbookList: updatedList });
+          
           del(`/handbook/delete/${id}`)
             .then(() => {
               wx.showToast({ title: '删除成功' });
@@ -334,6 +392,7 @@ Page({
             .catch((err) => {
               console.error('删除手账失败：', err);
               wx.showToast({ title: '删除失败', icon: 'none' });
+              this.getHandbookList(); // 失败回滚
             });
         }
       }
@@ -344,26 +403,46 @@ Page({
   likeHandbook(e) {
     const id = e.currentTarget.dataset.id;
     const isLiked = e.currentTarget.dataset.liked;
+    const { handbookList } = this.data;
+    
+    // 乐观更新：先更新本地
+    const updatedList = handbookList.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          isLiked: !isLiked,
+          likes: isLiked ? Math.max(0, (item.likes || 0) - 1) : (item.likes || 0) + 1
+        };
+      }
+      return item;
+    });
+    this.setData({ handbookList: updatedList });
     
     if (isLiked) {
       post(`/handbook/unlike/${id}`)
         .then(() => {
           wx.showToast({ title: '取消点赞成功' });
-          this.getHandbookList();
         })
         .catch((err) => {
           console.error('取消点赞失败：', err);
-          wx.showToast({ title: '操作失败', icon: 'none' });
+          // 失败回滚
+          if (!(err.data && err.data.code === 400)) {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          }
+          this.getHandbookList();
         });
     } else {
       post(`/handbook/like/${id}`)
         .then(() => {
           wx.showToast({ title: '点赞成功' });
-          this.getHandbookList();
         })
         .catch((err) => {
           console.error('点赞失败：', err);
-          wx.showToast({ title: '操作失败', icon: 'none' });
+          // 失败回滚
+          if (!(err.data && err.data.code === 400)) {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          }
+          this.getHandbookList();
         });
     }
   },
@@ -372,26 +451,46 @@ Page({
   collectHandbook(e) {
     const id = e.currentTarget.dataset.id;
     const isCollected = e.currentTarget.dataset.collected;
+    const { handbookList } = this.data;
+    
+    // 乐观更新：先更新本地
+    const updatedList = handbookList.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          isCollected: !isCollected,
+          collects: isCollected ? Math.max(0, (item.collects || 0) - 1) : (item.collects || 0) + 1
+        };
+      }
+      return item;
+    });
+    this.setData({ handbookList: updatedList });
     
     if (isCollected) {
       post(`/handbook/uncollect/${id}`)
         .then(() => {
           wx.showToast({ title: '取消收藏成功' });
-          this.getHandbookList();
         })
         .catch((err) => {
           console.error('取消收藏失败：', err);
-          wx.showToast({ title: '操作失败', icon: 'none' });
+          // 失败回滚
+          if (!(err.data && err.data.code === 400)) {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          }
+          this.getHandbookList();
         });
     } else {
       post(`/handbook/collect/${id}`)
         .then(() => {
           wx.showToast({ title: '收藏成功' });
-          this.getHandbookList();
         })
         .catch((err) => {
           console.error('收藏失败：', err);
-          wx.showToast({ title: '操作失败', icon: 'none' });
+          // 失败回滚
+          if (!(err.data && err.data.code === 400)) {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          }
+          this.getHandbookList();
         });
     }
   },
@@ -421,9 +520,49 @@ Page({
     this.setData({ aiSizeIndex: e.detail.value });
   },
 
-  // 生成AI图像
+  // 选择快速提示词
+  selectQuickPrompt(e) {
+    const prompt = e.currentTarget.dataset.prompt;
+    this.setData({ aiPrompt: prompt });
+  },
+
+  // 显示风格选择器
+  showStyleSelect() {
+    this.setData({ showStylePicker: true });
+  },
+
+  // 隐藏风格选择器
+  hideStyleSelect() {
+    this.setData({ showStylePicker: false });
+  },
+
+  // 选择风格
+  onStyleChange(e) {
+    this.setData({ aiStyleIndex: e.detail.value });
+  },
+
+  // 显示心情选择器
+  showMoodSelect() {
+    this.setData({ showMoodPicker: true });
+  },
+
+  // 隐藏心情选择器
+  hideMoodSelect() {
+    this.setData({ showMoodPicker: false });
+  },
+
+  // 选择心情
+  onMoodChange(e) {
+    this.setData({ aiMoodIndex: e.detail.value });
+  },
+
+  // 生成AI图像 - 手账专属版本
   generateAIImage() {
-    const { aiPrompt, aiSizes, aiSizeIndex } = this.data;
+    const { 
+      aiPrompt, aiSizes, aiSizeIndex, 
+      aiStyles, aiStyleIndex, 
+      aiMoods, aiMoodIndex 
+    } = this.data;
     
     if (!aiPrompt.trim()) {
       wx.showToast({ title: '请输入图像描述', icon: 'none' });
@@ -432,27 +571,43 @@ Page({
 
     this.setData({ generatingImage: true, generatedImage: '' });
 
-    post('/image/generate', {
+    const style = aiStyles[aiStyleIndex].key;
+    const mood = aiMoods[aiMoodIndex].key;
+
+    post('/image/generate-handbook', {
       prompt: aiPrompt,
+      style: style,
+      mood: mood,
       size: aiSizes[aiSizeIndex]
     })
       .then((result) => {
         if (result.data && result.data.image_url) {
           const source = result.data.source || 'unknown';
-          let message = '图像生成成功';
-          if (source === 'zhipuai') {
-            message = '智谱AI图像生成成功';
-          } else if (source === 'fast_fallback' || source === 'fallback') {
-            message = '已为您快速生成占位图像';
+          let message = '手账图片生成中';
+          
+          if (source === 'cogview' || source === 'cogview_cached') {
+            message = 'CogView-3-Flash 图片生成成功！';
+          } else if (source === 'handbook_fast_fallback') {
+            message = '快速占位图像已生成，AI正在优化...';
+          } else if (source === 'emergency_fallback') {
+            message = '已为您生成备用图像';
           }
+          
           this.setData({ 
             generatedImage: result.data.image_url,
             generatingImage: false 
           });
-          if (source !== 'zhipuai') {
-            wx.showToast({ title: message, icon: 'success', duration: 2000 });
-          } else {
-            wx.showToast({ title: message, icon: 'success', duration: 1500 });
+          
+          // 显示成功提示
+          wx.showToast({ 
+            title: message, 
+            icon: 'success', 
+            duration: source === 'cogview' ? 1500 : 2000 
+          });
+          
+          // 如果是快速占位，可以轮询等待AI生成
+          if (source === 'handbook_fast_fallback') {
+            this.startPollingForAIImage(result.data.prompt, style, aiSizes[aiSizeIndex]);
           }
         } else {
           throw new Error('生成失败');
@@ -463,6 +618,43 @@ Page({
         this.setData({ generatingImage: false });
         wx.showToast({ title: '生成图像失败', icon: 'none' });
       });
+  },
+
+  // 轮询等待AI图片生成
+  startPollingForAIImage(prompt, style, size) {
+    let pollCount = 0;
+    const maxPolls = 10;
+    const pollInterval = 3000;
+
+    const poll = () => {
+      pollCount++;
+      
+      post('/image/generate-handbook', {
+        prompt: prompt,
+        style: style,
+        size: size
+      }).then((result) => {
+        if (result.data && result.data.source === 'cogview_cached') {
+          // 成功获取AI生成的图片
+          this.setData({ 
+            generatedImage: result.data.image_url 
+          });
+          wx.showToast({
+            title: 'AI优化图片已就绪！',
+            icon: 'success',
+            duration: 1500
+          });
+        } else if (pollCount < maxPolls) {
+          // 继续轮询
+          setTimeout(poll, pollInterval);
+        }
+      }).catch(() => {
+        // 轮询失败，不处理
+      });
+    };
+
+    // 延迟开始轮询
+    setTimeout(poll, pollInterval);
   },
 
   // 使用生成的图像

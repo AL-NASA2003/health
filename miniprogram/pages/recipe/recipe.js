@@ -106,6 +106,36 @@ Page({
     const mockRecipes = [
       {
         id: 1,
+        recipe_name: '麻婆豆腐',
+        calorie: 220,
+        protein: 18,
+        carb: 12,
+        fat: 12,
+        flavor: '麻辣',
+        cook_step: '1. 豆腐切块焯水\n2. 锅中下油，放入豆瓣酱炒香\n3. 加入肉末炒散\n4. 加入豆腐和高汤，煮5分钟\n5. 勾芡，撒上花椒粉和葱花',
+        ingre_list: '嫩豆腐400g，肉末100g，豆瓣酱20g，花椒粉5g，生抽10ml，淀粉5g，葱花适量',
+        cook_type: '烧',
+        suitable_crowd: '所有人群',
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=delicious%20mapo%20tofu%20chinese%20sichuan%20food%20with%20chili%20and%20minced%20meat%20in%20bowl&image_size=square'
+      },
+      {
+        id: 2,
+        recipe_name: '水煮西蓝花',
+        calorie: 50,
+        protein: 4,
+        carb: 8,
+        fat: 1,
+        flavor: '清淡',
+        cook_step: '1. 西兰花切小朵洗净\n2. 锅中烧开水，加少许盐和油\n3. 放入西兰花焯水2分钟\n4. 捞出沥干，淋上少许香油即可',
+        ingre_list: '西兰花300g，盐3g，香油5ml',
+        cook_type: '煮',
+        suitable_crowd: '减脂人群',
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=healthy%20boiled%20broccoli%20vegetables%20on%20plate%20green%20fresh&image_size=square'
+      },
+      {
+        id: 3,
         recipe_name: '低脂鸡胸肉沙拉',
         calorie: 280,
         protein: 32,
@@ -116,24 +146,11 @@ Page({
         ingre_list: '鸡胸肉200g，生菜100g，番茄1个，黄瓜1根，橄榄油10ml，柠檬汁5ml，盐、黑胡椒适量',
         cook_type: '煎',
         suitable_crowd: '减脂人群',
-        image: ''
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=healthy%20grilled%20chicken%20breast%20salad%20with%20fresh%20vegetables%20tomato%20lettuce%20in%20bowl&image_size=square'
       },
       {
-        id: 2,
-        recipe_name: '清蒸鲈鱼',
-        calorie: 180,
-        protein: 28,
-        carb: 5,
-        fat: 6,
-        flavor: '清淡',
-        cook_step: '1. 鲈鱼洗净，划几刀\n2. 放入葱姜蒜，淋上料酒\n3. 大火蒸10-12分钟\n4. 出锅淋上蒸鱼豉油',
-        ingre_list: '鲈鱼1条，葱1根，姜5片，蒜2瓣，料酒10ml，蒸鱼豉油15ml',
-        cook_type: '蒸',
-        suitable_crowd: '所有人群',
-        image: ''
-      },
-      {
-        id: 3,
+        id: 4,
         recipe_name: '燕麦蓝莓粥',
         calorie: 220,
         protein: 8,
@@ -144,10 +161,11 @@ Page({
         ingre_list: '燕麦50g，蓝莓50g，蜂蜜10g，水300ml',
         cook_type: '煮',
         suitable_crowd: '早餐',
-        image: ''
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=healthy%20oatmeal%20porridge%20with%20fresh%20blueberries%20breakfast%20in%20bowl&image_size=square'
       },
       {
-        id: 4,
+        id: 5,
         recipe_name: '西兰花炒虾仁',
         calorie: 200,
         protein: 25,
@@ -158,10 +176,11 @@ Page({
         ingre_list: '虾仁150g，西兰花200g，蒜末5g，盐、白胡椒适量',
         cook_type: '炒',
         suitable_crowd: '增肌人群',
-        image: ''
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=delicious%20stir%20fried%20shrimp%20with%20broccoli%20garlic%20chinese%20food&image_size=square'
       },
       {
-        id: 5,
+        id: 6,
         recipe_name: '番茄牛腩',
         calorie: 350,
         protein: 22,
@@ -172,10 +191,11 @@ Page({
         ingre_list: '牛腩500g，番茄3个，洋葱1个，姜5片，料酒10ml，盐适量',
         cook_type: '炖',
         suitable_crowd: '增肌人群',
-        image: ''
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hearty%20beef%20brisket%20stew%20with%20tomatoes%20chinese%20braised%20dish&image_size=square'
       },
       {
-        id: 6,
+        id: 7,
         recipe_name: '蒜蓉菠菜',
         calorie: 80,
         protein: 4,
@@ -186,7 +206,8 @@ Page({
         ingre_list: '菠菜300g，蒜末10g，盐适量',
         cook_type: '炒',
         suitable_crowd: '减脂人群',
-        image: ''
+        cooking_time: 30,
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=healthy%20stir%20fried%20spinach%20with%20garlic%20green%20vegetable%20dish&image_size=square'
       }
     ];
 
@@ -219,15 +240,15 @@ Page({
     }
 
     // 不显示 loading 弹窗，静默更新
-    post('/recipe/recommend', {}, false)
+    post('/recommend/recipe', {}, false)
       .then((result) => {
         if (result && result.data) {
           this.setData({
             recipeList: result.data.recommend_list || [],
             filteredList: result.data.recommend_list || [],
             hasRecommend: true,
-            nutritionNeeds: result.data.nutrition_needs,
-            dailyMealPlan: result.data.daily_meal_plan
+            nutritionNeeds: result.data.nutrition_needs || null,
+            dailyMealPlan: result.data.daily_meal_plan || null
           });
           wx.showToast({ title: '推荐成功' });
         }
@@ -361,6 +382,13 @@ Page({
     const recipe = e.currentTarget.dataset.item;
     wx.navigateTo({
       url: `/pages/recipe-detail/recipe-detail?id=${recipe.id}`
+    });
+  },
+
+  // 跳转到登录页面（修复缺失方法问题）
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
     });
   }
 });

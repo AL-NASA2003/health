@@ -25,6 +25,23 @@ class Recipe(db.Model):
     image = db.Column(db.String(255), default="", comment="食谱图片")
     ingre_list = db.Column(db.String(500), default="", comment="食材组成")
     
+    # 新增字段：参考aigconly.com/recipe-generator
+    cuisine = db.Column(db.String(20), default="", comment="菜系：中式/西式/日式/韩式")
+    difficulty = db.Column(db.String(20), default="", comment="难度：简单/中等/困难")
+    cook_time = db.Column(db.Integer, default=30, comment="烹饪时间(分钟)")
+    
+    # 新增字段：风味评分系统（参考flavorithm.com）
+    flavor_sweet = db.Column(db.Float, default=0.0, comment="甜味评分 0-10")
+    flavor_salty = db.Column(db.Float, default=0.0, comment="咸味评分 0-10")
+    flavor_spicy = db.Column(db.Float, default=0.0, comment="辣味评分 0-10")
+    flavor_sour = db.Column(db.Float, default=0.0, comment="酸味评分 0-10")
+    flavor_umami = db.Column(db.Float, default=0.0, comment="鲜味评分 0-10")
+    
+    # 其他标签
+    is_quick = db.Column(db.Boolean, default=False, comment="是否快手菜")
+    is_featured = db.Column(db.Boolean, default=False, comment="是否精选")
+    is_seasonal = db.Column(db.Boolean, default=False, comment="是否当季")
+    
     # 时间字段
     create_time = db.Column(db.DateTime, default=datetime.now, comment="创建时间")
     update_time = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now, comment="更新时间")
@@ -72,6 +89,20 @@ class Recipe(db.Model):
             "cook_type": self.cook_type,
             "suitable_crowd": self.suitable_crowd,
             "image": self.image,
+            # 新增字段
+            "cuisine": self.cuisine,
+            "difficulty": self.difficulty,
+            "cook_time": self.cook_time,
+            # 新增：风味评分（参考flavorithm.com）
+            "flavor_sweet": self.flavor_sweet,
+            "flavor_salty": self.flavor_salty,
+            "flavor_spicy": self.flavor_spicy,
+            "flavor_sour": self.flavor_sour,
+            "flavor_umami": self.flavor_umami,
+            # 新增：标签
+            "is_quick": self.is_quick,
+            "is_featured": self.is_featured,
+            "is_seasonal": self.is_seasonal,
             "create_time": self.create_time.strftime("%Y-%m-%d %H:%M:%S"),
             "update_time": self.update_time.strftime("%Y-%m-%d %H:%M:%S")
         }

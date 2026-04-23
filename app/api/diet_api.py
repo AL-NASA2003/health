@@ -56,12 +56,45 @@ class DietRecordResource(Resource):
         if not valid:
             return format_response(**params)
         
-        # 计算营养成分（如果传了食材ID）
+        # 调试：打印收到的参数
+        print("📝 收到添加记录请求，参数：", params)
+        
+        # 计算营养成分（如果传了食材ID用食材，否则根据食物类型估算）
         nutrition = {"calorie": 0, "protein": 0, "carb": 0, "fat": 0}
+        
         if "ingredient_id" in params:
             ingredient = Ingredient.query.get(params["ingredient_id"])
             if ingredient:
                 nutrition = calculate_nutrition(ingredient.to_dict(), params["weight"])
+                print("🥗 使用食材计算营养：", nutrition)
+        else:
+            # 根据食物类型估算营养成分（每100g的平均含量）
+            food_type_nutrition = {
+                "饮品": {"calorie": 40, "protein": 1, "carb": 9, "fat": 0},
+                "菜式": {"calorie": 150, "protein": 8, "carb": 15, "fat": 7},
+                "主食": {"calorie": 120, "protein": 4, "carb": 25, "fat": 1},
+                "水果": {"calorie": 50, "protein": 0.5, "carb": 12, "fat": 0.2},
+                "零食": {"calorie": 200, "protein": 4, "carb": 25, "fat": 10}
+            }
+            
+            # 获取食物类型，默认是"菜式"
+            food_type = params.get("food_type", "菜式")
+            base_nutrition = food_type_nutrition.get(food_type, food_type_nutrition["菜式"])
+            
+            # 根据重量计算实际营养成分
+            weight = params.get("weight", 100)
+            multiplier = weight / 100.0
+            
+            nutrition = {
+                "calorie": round(base_nutrition["calorie"] * multiplier, 1),
+                "protein": round(base_nutrition["protein"] * multiplier, 1),
+                "carb": round(base_nutrition["carb"] * multiplier, 1),
+                "fat": round(base_nutrition["fat"] * multiplier, 1)
+            }
+            
+            print(f"🧮 根据食物类型 '{food_type}' 计算营养：")
+            print(f"   重量：{weight}g，倍数：{multiplier}")
+            print(f"   营养：{nutrition}")
         
         # 扣减库存（如果传了食材ID）
         if "ingredient_id" in params:
