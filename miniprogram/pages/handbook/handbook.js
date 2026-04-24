@@ -184,9 +184,13 @@ Page({
         try {
           const data = JSON.parse(res.data);
           if (data.code === 200) {
-            // 更新为服务器返回的URL
+            // 更新为服务器返回的URL，并拼接完整URL
+            let imageUrl = data.data.url;
+            if (imageUrl.startsWith('/static/')) {
+              imageUrl = getApp().globalData.staticBaseUrl + imageUrl;
+            }
             this.setData({
-              'formData.image': data.data.url
+              'formData.image': imageUrl
             });
             wx.showToast({ title: '上传成功' });
           } else {
@@ -274,8 +278,13 @@ Page({
         try {
           const data = JSON.parse(res.data);
           if (data.code === 0 && data.data && data.data.url) {
+            // 拼接完整的URL
+            let imageUrl = data.data.url;
+            if (imageUrl.startsWith('/static/')) {
+              imageUrl = getApp().globalData.staticBaseUrl + imageUrl;
+            }
             this.setData({
-              'formData.image': data.data.url
+              'formData.image': imageUrl
             });
             wx.showToast({
               title: '抠图成功！',
@@ -341,31 +350,55 @@ Page({
           this.getHandbookList(); // 失败回滚
         });
     } else {
-      // 乐观更新：先添加到本地
-      const newItem = {
-        id: Date.now(),
+      // 乐观更新：先添加到本地列表
+      const newHandbook = {
+        id: Date.now(), // 使用临时ID
         title: formData.title,
         content: formData.content,
         image: formData.image,
+        is_liked: false,
         likes: 0,
-        collects: 0,
-        isLiked: false,
-        isCollected: false,
-        createTime: new Date().toLocaleString()
+        create_time: new Date().toLocaleString(),
+        user: {
+          nickname: '我',
+          avatar: ''
+        }
       };
-      const updatedList = [newItem, ...handbookList];
-      this.setData({ handbookList: updatedList });
+      const newList = [newHandbook, ...this.data.handbookList];
+      this.setData({ handbookList: newList });
       this.hideDialog();
       
+      // 使用后端返回的数据更新本地
       post('/handbook/add', formData)
-        .then(() => {
+        .then((res) => {
+          if (res.data) {
+            const app = getApp();
+            let imageUrl = res.data.image || '';
+            if (imageUrl && !imageUrl.startsWith('http')) {
+              imageUrl = app.globalData.staticBaseUrl + imageUrl;
+            }
+            const realHandbook = {
+              ...res.data,
+              image: imageUrl,
+              is_liked: false
+            };
+            // 替换临时数据为真实数据
+            const updatedList = this.data.handbookList.map(item => {
+              if (item.id === newHandbook.id) {
+                return realHandbook;
+              }
+              return item;
+            });
+            this.setData({ handbookList: updatedList });
+          }
           wx.showToast({ title: '添加成功' });
-          this.getHandbookList();
         })
         .catch((err) => {
           console.error('添加手账失败：', err);
           wx.showToast({ title: '添加失败', icon: 'none' });
-          this.getHandbookList(); // 失败回滚
+          // 失败时删除临时添加的数据
+          const updatedList = this.data.handbookList.filter(item => item.id !== newHandbook.id);
+          this.setData({ handbookList: updatedList });
         });
     }
   },
@@ -569,6 +602,9 @@ Page({
       return;
     }
 
+    // 记录开始时间
+    const startTime = Date.now();
+    
     this.setData({ generatingImage: true, generatedImage: '' });
 
     const style = aiStyles[aiStyleIndex].key;
@@ -582,15 +618,13 @@ Page({
     })
       .then((result) => {
         if (result.data && result.data.image_url) {
-          const source = result.data.source || 'unknown';
-          let message = '手账图片生成中';
+          // 优先使用后端返回的真实生成时间
+          let generateTime = result.data.generate_time;
           
-          if (source === 'cogview' || source === 'cogview_cached') {
-            message = 'CogView-3-Flash 图片生成成功！';
-          } else if (source === 'handbook_fast_fallback') {
-            message = '快速占位图像已生成，AI正在优化...';
-          } else if (source === 'emergency_fallback') {
-            message = '已为您生成备用图像';
+          if (!generateTime) {
+            // 如果后端没有返回，使用前端计算的时间
+            const endTime = Date.now();
+            generateTime = ((endTime - startTime) / 1000).toFixed(1);
           }
           
           this.setData({ 
@@ -598,17 +632,11 @@ Page({
             generatingImage: false 
           });
           
-          // 显示成功提示
           wx.showToast({ 
-            title: message, 
-            icon: 'success', 
-            duration: source === 'cogview' ? 1500 : 2000 
+            title: `图像已生成！耗时 ${generateTime}秒`, 
+            icon: 'success',
+            duration: 2500
           });
-          
-          // 如果是快速占位，可以轮询等待AI生成
-          if (source === 'handbook_fast_fallback') {
-            this.startPollingForAIImage(result.data.prompt, style, aiSizes[aiSizeIndex]);
-          }
         } else {
           throw new Error('生成失败');
         }

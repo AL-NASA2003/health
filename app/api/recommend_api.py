@@ -102,11 +102,115 @@ def recommend_recipe():
         recommend_method = "local_algorithm"
         ai_error = None
         
-        # 快速测试路径：直接使用本地算法，跳过AI
-        logger.info("使用本地算法推荐（优化测试性能）")
-        recommend_list = PersonalizedRecommender.generate_recommendations(user, recipes)
+        # 优先尝试AI推荐
+        try:
+            logger.info("尝试使用AI推荐")
+            client = get_zhipuai_client()
+            
+            # 获取所有可用食谱标题（用于AI推荐参考）
+            all_recipe_titles = [recipe.recipe_name for recipe in recipes[:30]]  # 给AI参考前30个食谱
+            title_list_str = ", ".join(all_recipe_titles)
+            
+            # 构建用户信息
+            user_profile = (
+                f"{user.age}岁，{'男' if user.gender == 1 else '女'}，身高{user.height}cm，体重{user.weight}kg，"
+                f"健康目标{user.health_goal}，饮食偏好{user.dietary_preference or '清淡'}"
+            )
+            
+            # 调用AI获取推荐 - 修改Prompt让AI直接从已有食谱中选择
+            logger.info(f"向AI提供 {len(all_recipe_titles)} 个食谱供选择")
+            
+            # 重新定义一个更适合的Prompt来让AI从已有食谱中选择
+            ai_prompt = f"""你是一位专业的营养师和食谱推荐专家。请根据以下用户信息，从给定的食谱列表中为用户推荐3个最适合的食谱。
+
+用户信息：
+- 年龄：{user.age}岁
+- 身高：{user.height}cm
+- 体重：{user.weight}kg
+- 健康目标：{user.health_goal or '维持健康'}
+- 饮食偏好：{user.dietary_preference or '无特殊偏好'}
+- 目标热量：{user.target_calorie or 2000}kcal
+
+可用食谱列表：
+{title_list_str}
+
+请严格以JSON格式返回推荐结果，格式如下：
+{{
+  "recommendations": [
+    {{
+      "title": "食谱名称（必须是上面列表中存在的完整名称）",
+      "reason": "推荐理由，说明为什么这个食谱适合该用户"
+    }}
+  ]
+}}
+重要要求：
+1. 只返回JSON，不要返回任何其他文字
+2. 不要使用Markdown格式，不要用```包裹
+3. 确保JSON格式完全正确，字符串用双引号
+4. title必须完全匹配食谱列表中的名称，不要修改或简化
+5. 推荐3个最适合的食谱
+"""
+            
+            messages = [{"role": "user", "content": ai_prompt}]
+            ai_response = client.chat(messages, temperature=0.3, max_tokens=2000)
+            
+            # 解析AI响应
+            try:
+                result = client._parse_json_response(ai_response)
+            except Exception:
+                result = client._mock_recipe_recommendation()
+            
+            # 如果AI返回了推荐，使用AI结果
+            if result.get("recommendations") and len(result["recommendations"]) > 0:
+                ai_recommendations = result["recommendations"]
+                
+                # 从数据库中匹配对应的食谱 - 使用正确的键名
+                recipe_titles = [rec.get("title", "") for rec in ai_recommendations]
+                matched_recipes = Recipe.query.filter(Recipe.recipe_name.in_(recipe_titles)).all()
+                
+                if matched_recipes and len(matched_recipes) > 0:
+                    recommend_list = PersonalizedRecommender.generate_recommendations(user, matched_recipes)
+                    recommend_method = "ai_recommend"
+                    logger.info(f"AI推荐成功，匹配到 {len(recommend_list)} 个食谱")
+                    
+                    # 将AI推荐理由补充到返回结果中
+                    for rec in recommend_list:
+                        for ai_rec in ai_recommendations:
+                            if ai_rec.get("title") == rec.get("recipe_name"):
+                                rec["ai_reason"] = ai_rec.get("reason", "")
+                else:
+                    # 如果没有匹配到，使用本地算法，但记录AI尝试
+                    ai_error = "AI推荐成功，但未完全匹配到食谱，使用本地算法补充"
+                    logger.warning(ai_error)
+                    recommend_method = "ai_fallback"
+                    recommend_list = PersonalizedRecommender.generate_recommendations(user, recipes)
+            else:
+                ai_error = "AI未返回推荐结果"
+                logger.warning(ai_error)
+                
+        except Exception as e:
+            ai_error = f"AI推荐失败：{str(e)}"
+            logger.error(ai_error)
+            import traceback
+            logger.error(traceback.format_exc())
+        
+        # 如果AI失败或没有返回，使用本地算法
+        if not recommend_list:
+            logger.info("使用本地算法推荐")
+            recommend_list = PersonalizedRecommender.generate_recommendations(user, recipes)
         
         health_data = HealthIndexCalculator.calculate_health_index(user)
+        
+        # 转换字段名，适配前端期望的格式
+        if nutrition_needs:
+            nutrition_needs_frontend = {
+                "calorie": nutrition_needs.get("target_calorie"),
+                "protein": nutrition_needs.get("target_protein"),
+                "carb": nutrition_needs.get("target_carb"),
+                "fat": nutrition_needs.get("target_fat")
+            }
+        else:
+            nutrition_needs_frontend = None
         
         user_profile = (
             f"{user.age}岁，{'男' if user.gender == 1 else '女'}，身高{user.height}cm，体重{user.weight}kg，"
@@ -123,7 +227,7 @@ def recommend_recipe():
         return format_response(data={
             "user_profile": user_profile,
             "health_data": health_data,
-            "nutrition_needs": nutrition_needs,
+            "nutrition_needs": nutrition_needs_frontend,
             "recommend_list": recommend_list,
             "total": len(recommend_list),
             "recommend_method": recommend_method,
@@ -389,4 +493,59 @@ def hybrid_recommend():
         import traceback
         logger.error(traceback.format_exc())
         return format_response(500, f"服务器内部错误：{str(e)}")
+
+
+@recommend_bp.route("/ai-recipe", methods=["POST"])
+@login_required
+def ai_recommend_recipe():
+    """
+    AI智能食谱推荐（使用GLM-5.1模型）
+    1. 获取用户健康信息
+    2. 可选：获取冰箱食材
+    3. 调用智谱AI生成个性化食谱
+    """
+    try:
+        data = request.get_json() or {}
+        use_fridge = data.get("use_fridge", False)
+        
+        user = User.query.get(g.user_id)
+        if not user:
+            return format_response(404, "用户不存在")
+        
+        # 构建用户信息
+        user_profile = {
+            "age": user.age,
+            "height": user.height,
+            "weight": user.weight,
+            "health_goal": user.health_goal or "维持健康",
+            "dietary_preference": user.dietary_preference or "清淡",
+            "target_calorie": user.target_calorie or 2000
+        }
+        
+        # 获取冰箱食材（如果需要）
+        fridge_ingredients = []
+        if use_fridge:
+            from app.models.user_ingredient import UserIngredient
+            user_ingredients = UserIngredient.query.filter_by(user_id=user.id).all()
+            fridge_ingredients = [ui.ingre_name for ui in user_ingredients]
+        
+        logger.info(f"AI食谱推荐请求：用户={user.id}, 冰箱食材={len(fridge_ingredients)}个")
+        
+        # 调用智谱AI生成推荐
+        client = get_zhipuai_client()
+        result = client.generate_recipe_recommendation(user_profile, fridge_ingredients)
+        
+        return format_response(data={
+            "recommendations": result.get("recommendations", []),
+            "user_profile": user_profile,
+            "fridge_ingredients": fridge_ingredients,
+            "source": "zhipu_ai"
+        })
+        
+    except Exception as e:
+        logger.error(f"AI食谱推荐失败：{str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return format_response(500, f"服务器内部错误：{str(e)}")
+
 

@@ -107,6 +107,72 @@ def create_app():
             "docs": "/api/docs"
         })
     
+    # 首先添加直接路由（优先级最高） - 必须在restx_api.init_app之前！
+    logger.info("添加直接路由...")
+    import random
+    
+    # 快速降级图像
+    FAST_FALLBACK_IMAGES = {
+        "cute": [
+            "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20kawaii%20handbook%20pastel%20illustration&image_size=square_hd",
+            "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=adorable%20cute%20doodle%20journal%20page&image_size=square_hd"
+        ]
+    }
+    
+    @app.route("/debug/test", methods=["GET"])
+    def simple_test():
+        """测试路由"""
+        logger.info("简单测试路由被调用！")
+        return format_response(data={"message": "测试成功！", "working": True})
+    
+    @app.route("/debug/image/test", methods=["GET"])
+    def image_test_route():
+        """测试图像路由"""
+        logger.info("图像测试路由被调用！")
+        return format_response(data={"message": "图像API正在工作！", "time": __import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+    
+    @app.route("/debug/image/generate-handbook", methods=["POST"])
+    def quick_handbook_image():
+        """快速生成手账图像 - 直接返回降级图像"""
+        logger.info("快速手账图像路由被调用！")
+        try:
+            params = request.get_json() or {}
+            prompt = params.get("prompt", "健康饮食手账")
+            style = params.get("style", "cute")
+            
+            # 直接返回降级图像
+            fallback_list = FAST_FALLBACK_IMAGES.get(style, FAST_FALLBACK_IMAGES["cute"])
+            fallback_url = random.choice(fallback_list)
+            
+            logger.info(f"快速生成手账图像: {prompt}, 风格: {style}")
+            
+            return format_response(data={
+                "image_url": fallback_url,
+                "prompt": prompt,
+                "style": style,
+                "source": "fast_fallback"
+            })
+        except Exception as e:
+            logger.error(f"快速生成图像失败: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return format_response(500, f"生成失败: {e}")
+    
+    # 同时也保留 /api 前缀的直接路由，但是放在 debug 路由之后
+    @app.route("/api/test-demo", methods=["GET"])
+    def api_simple_test():
+        logger.info("API测试路由被调用！")
+        return format_response(data={"message": "API测试成功！", "working": True})
+    
+    @app.route("/api/image/test", methods=["GET"])
+    def api_image_test_route():
+        logger.info("API图像测试路由被调用！")
+        return format_response(data={"message": "API图像测试路由正常！", "time": __import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+    
+    # @app.route("/api/image/generate-handbook", methods=["POST"])  # 已移除，让 image_api.py 中的路由处理
+    
+    logger.info("✅ 直接路由添加完成！")
+    
     # 初始化 API 文档
     # 将API文档实例与Flask应用关联
     restx_api.init_app(app)
@@ -163,9 +229,6 @@ def create_app():
         # 创建所有数据库表
         db.create_all()
     
-    # 统一错误处理
-    from app.utils.common import format_response  # 导入统一响应格式化函数
-    
     # 注册使用Blueprint的API
     # Blueprint是Flask中组织路由的方式，用于将相关路由分组
     from app.api.like_api import like_bp  # 点赞相关API
@@ -180,8 +243,10 @@ def create_app():
     from app.api.nutrition_api import nutrition_bp  # 营养计算相关API
     from app.api.ai_assistant_api import ai_assistant_bp  # AI助手相关API
     from app.api.ocr_api import ocr_bp  # OCR文字识别相关API
+    from app.api.zhipu_web_api import zhipu_web_bp  # 智谱AI网页版爬虫API
     
     # 注册Blueprint到应用，并设置URL前缀
+    logger.info("开始注册蓝图...")
     app.register_blueprint(like_bp, url_prefix="/api/like")  # 点赞API路径: /api/like
     app.register_blueprint(forum_bp, url_prefix="/api/forum")  # 论坛API路径: /api/forum
     app.register_blueprint(handbook_bp, url_prefix="/api/handbook")  # 手账API路径: /api/handbook
@@ -194,6 +259,8 @@ def create_app():
     app.register_blueprint(nutrition_bp, url_prefix="/api/nutrition")  # 营养计算API路径: /api/nutrition
     app.register_blueprint(ai_assistant_bp, url_prefix="/api/ai")  # AI助手API路径: /api/ai
     app.register_blueprint(ocr_bp, url_prefix="/api/ocr")  # OCR文字识别API路径: /api/ocr
+    app.register_blueprint(zhipu_web_bp, url_prefix="/api/zhipu")  # 智谱AI网页版爬虫API路径: /api/zhipu
+    logger.info("✅ 所有蓝图注册完成！")
     
     # 导入并注册使用restx命名空间的API
     # 动态导入模块，避免循环导入问题
@@ -228,6 +295,10 @@ def create_app():
         根路径返回API服务信息，其他返回404
         """
         from flask import request
+        logger.warning(f"=== 404 Not Found: {request.method} {request.path} ===")
+        logger.warning(f"请求 URL: {request.url}")
+        logger.warning(f"请求 headers: {dict(request.headers)}")
+        
         if request.path == '/':
             return format_response(data={
                 "service": "健康饮食管理系统API",
@@ -254,7 +325,11 @@ def create_app():
         return format_response(400, "请求参数错误")
     
     # 启动定时任务（每2小时爬取一次小红书热点美食）
-    if not os.environ.get('DISABLE_SCHEDULER'):
+    # 检查是否禁用爬虫（处理字符串环境变量）
+    disable_scheduler = os.environ.get('DISABLE_SCHEDULER')
+    if disable_scheduler and disable_scheduler.lower() == 'true':
+        logger.info("⏭️  爬虫任务已禁用，服务快速启动模式")
+    else:
         from app.crawler.xhs_drission_crawler import crawl_xhs_hot_food  # 导入爬虫函数
         import threading
         from loguru import logger
@@ -277,8 +352,6 @@ def create_app():
         # 启动定时任务调度器
         scheduler.start()
         logger.info("定时任务已启动，每2小时执行一次爬取任务")
-    else:
-        logger.info("⏭️  爬虫任务已禁用，服务快速启动模式")
     
     # 启用 HTTPS 强制和安全头
     # 本地开发环境禁用 HTTPS 强制，生产环境启用

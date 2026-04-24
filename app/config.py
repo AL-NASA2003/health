@@ -34,10 +34,17 @@ WX_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session"  # 微信登录API
 
 
 
-# 智谱AI配置 - 推荐使用GLM-4.7-Flash（免费无Token上限）
+# 智谱AI配置 - 使用智谱免费模型
 ZHIPUAI_API_KEY = os.environ.get('ZHIPUAI_API_KEY', 'adbff1c3892644e1bef06d6dba1b1190.0HI68lIG4dNk0yO8')  # 智谱AI API Key
-ZHIPUAI_BASE_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
-ZHIPUAI_MODEL = 'GLM-4.7-Flash'
+ZHIPUAI_BASE_URL = 'https://open.bigmodel.cn/api/paas/v4/'
+
+# 智谱AI免费模型配置
+ZHIPUAI_CHAT_MODEL = 'glm-4.7'                 # 免费对话模型
+ZHIPUAI_VISION_MODEL = 'glm-4.6v-flash'        # 免费视觉模型
+ZHIPUAI_THINKING_MODEL = 'glm-4.7'             # 免费思维模型
+ZHIPUAI_IMAGE_MODEL = 'cogview-3-flash'        # 免费图像生成模型
+ZHIPUAI_EMBEDDING_MODEL = 'embedding-2'         # 免费嵌入模型
+ZHIPUAI_RERANK_MODEL = 'rerank'                 # 免费重排序模型
 
 # Redis配置（用于缓存和会话存储）
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')  # Redis服务器地址

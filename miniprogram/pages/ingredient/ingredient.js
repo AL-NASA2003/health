@@ -159,7 +159,7 @@ Page({
 
   // 提交表单（添加/编辑）
   submitForm() {
-    const { formData, isEdit } = this.data;
+    const { formData, isEdit, ingredientList } = this.data;
     
     // 校验必填项
     if (!formData.ingre_name) {
@@ -197,33 +197,49 @@ Page({
 
     // 编辑模式
     if (isEdit) {
+      // 先更新本地数据（乐观更新）
+      const updatedList = ingredientList.map(item => {
+        if (item.id === formData.id) {
+          return { ...item, ...params };
+        }
+        return item;
+      });
+      this.setData({ ingredientList: updatedList });
+      this.hideDialog();
+      
       put(`/ingredient/${formData.id}`, params)
         .then(() => {
           wx.showToast({ title: '保存成功' });
-          this.hideDialog();
-          this.getIngredientList();
+          // 成功后不再刷新列表，数据已经更新
         })
         .catch((err) => {
           console.error('编辑食材失败：', err);
           wx.showToast({ title: '保存失败', icon: 'none' });
+          // 失败回滚
+          this.getIngredientList();
         });
     } 
     // 添加模式
     else {
-      // 乐观更新UI
+      // 先更新本地数据（乐观更新）
       const newIngredient = {
         id: Date.now(),
         ...params,
         create_time: new Date().toISOString()
       };
-      const newList = [newIngredient, ...this.data.ingredientList];
+      const newList = [newIngredient, ...ingredientList];
       this.setData({ ingredientList: newList });
       this.hideDialog();
       
       post('/ingredient', params)
-        .then(() => {
+        .then((result) => {
           wx.showToast({ title: '添加成功' });
-          this.getIngredientList();
+          // 用后端返回的真实数据更新临时数据
+          if (result && result.data) {
+            const updatedList = [result.data, ...ingredientList];
+            this.setData({ ingredientList: updatedList });
+          }
+          // 不再调用 getIngredientList()
         })
         .catch((err) => {
           console.error('添加食材失败：', err);
@@ -237,20 +253,27 @@ Page({
   // 删除食材
   deleteIngredient(e) {
     const id = e.currentTarget.dataset.id;
+    const { ingredientList } = this.data;
     
     wx.showModal({
       title: '提示',
       content: '确定要删除该食材吗？',
       success: (res) => {
         if (res.confirm) {
+          // 先从本地删除（乐观更新）
+          const updatedList = ingredientList.filter(item => item.id !== id);
+          this.setData({ ingredientList: updatedList });
+          
           del(`/ingredient/${id}`)
             .then(() => {
               wx.showToast({ title: '删除成功' });
-              this.getIngredientList();
+              // 不再刷新列表
             })
             .catch((err) => {
               console.error('删除食材失败：', err);
               wx.showToast({ title: '删除失败', icon: 'none' });
+              // 失败回滚
+              this.getIngredientList();
             });
         }
       }

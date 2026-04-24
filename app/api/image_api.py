@@ -374,6 +374,7 @@ def generate_handbook_image():
         - size: 图片尺寸（可选：512x512, 1024x1024, 1024x1536, 1536x1024）
         - mood: 心情（可选：happy, sad, excited, calm等）
     """
+    import time
     try:
         params = request.json or {}
         prompt = params.get("prompt")
@@ -407,24 +408,50 @@ def generate_handbook_image():
                         "source": "cogview_cached"
                     })
         
-        # 先快速返回降级图片
-        fallback_url = random.choice(template["fallback_images"])
-        
-        # 后台异步使用CogView-3-Flash生成
+        # 直接同步使用CogView-3-Flash生成
         if ZHIPUAI_API_KEY:
-            thread = threading.Thread(
-                target=async_generate_handbook_with_cogview,
-                args=(enhanced_prompt, size, cache_key),
-                daemon=True
-            )
-            thread.start()
-            logger.info("后台CogView-3-Flash生成已启动")
+            try:
+                client = get_zhipuai_client()
+                logger.info(f"CogView-3-Flash生成中: {prompt[:50]}...")
+                
+                # 记录开始时间
+                start_time = time.time()
+                
+                result = client.generate_image(enhanced_prompt, size)
+                
+                # 计算耗时
+                end_time = time.time()
+                generate_time = round(end_time - start_time, 1)
+                
+                if result.get("success") and result.get("image_url"):
+                    # 缓存结果
+                    with CACHE_LOCK:
+                        IMAGE_CACHE[cache_key] = {
+                            "image_url": result["image_url"],
+                            "source": "cogview-3-flash",
+                            "generated": True
+                        }
+                    logger.info(f"CogView-3-Flash手账图片生成成功! 耗时: {generate_time}秒")
+                    
+                    return format_response(data={
+                        "image_url": result["image_url"],
+                        "prompt": prompt,
+                        "style": style,
+                        "source": "cogview",
+                        "generate_time": generate_time
+                    })
+            except Exception as e:
+                logger.error(f"CogView-3-Flash调用失败: {str(e)}")
+        
+        # 如果AI生成失败，返回降级图像
+        fallback_url = random.choice(template["fallback_images"])
+        logger.info("使用降级图像")
         
         return format_response(data={
             "image_url": fallback_url,
             "prompt": prompt,
             "style": style,
-            "source": "handbook_fast_fallback"
+            "source": "fallback"
         })
             
     except Exception as e:

@@ -101,6 +101,11 @@ Page({
 
   // 上传图片
   uploadImage(tempFilePath) {
+    // 先显示本地图片
+    this.setData({
+      'formData.image': tempFilePath
+    });
+    
     wx.showLoading({ title: '上传中...' });
     
     const app = getApp();
@@ -118,8 +123,13 @@ Page({
         try {
           const data = JSON.parse(res.data);
           if (data.code === 200 && data.data && data.data.url) {
+            // 拼接完整的URL
+            let imageUrl = data.data.url;
+            if (imageUrl.startsWith('/static/')) {
+              imageUrl = app.globalData.staticBaseUrl + imageUrl;
+            }
             this.setData({
-              'formData.image': data.data.url
+              'formData.image': imageUrl
             });
             wx.showToast({ title: '上传成功', icon: 'success' });
           } else {
@@ -140,7 +150,7 @@ Page({
 
   // 提交表单
   submitForm() {
-    const { formData } = this.data;
+    const { formData, postList } = this.data;
     
     if (!formData.title) {
       wx.showToast({ title: '请输入标题', icon: 'none' });
@@ -151,37 +161,58 @@ Page({
       return;
     }
 
-    // 乐观更新UI
+    // 乐观更新：先添加到本地列表
     const newPost = {
-      id: Date.now(),
+      id: Date.now(), // 使用临时ID
       title: formData.title,
       content: formData.content,
       image: formData.image,
       is_liked: false,
       is_collected: false,
       likes: 0,
-      collects: 0,
-      comments: 0,
+      views: 0,
       create_time: new Date().toLocaleString(),
       user: {
         nickname: '我',
         avatar: ''
       }
     };
-    const newList = [newPost, ...this.data.postList];
+    const newList = [newPost, ...postList];
     this.setData({ postList: newList });
     this.hideDialog();
-
+    
+    // 使用后端返回的数据更新本地
     post('/forum/add', formData)
-      .then(() => {
+      .then((res) => {
+        if (res.data) {
+          const app = getApp();
+          let imageUrl = res.data.image || '';
+          if (imageUrl && !imageUrl.startsWith('http')) {
+            imageUrl = app.globalData.staticBaseUrl + imageUrl;
+          }
+          const realPost = {
+            ...res.data,
+            image: imageUrl,
+            is_liked: false,
+            is_collected: false
+          };
+          // 替换临时数据为真实数据
+          const updatedList = this.data.postList.map(item => {
+            if (item.id === newPost.id) {
+              return realPost;
+            }
+            return item;
+          });
+          this.setData({ postList: updatedList });
+        }
         wx.showToast({ title: '发布成功' });
-        this.getPostList();
       })
       .catch((err) => {
         console.error('发布帖子失败：', err);
         wx.showToast({ title: '发布失败', icon: 'none' });
-        // 失败回滚
-        this.getPostList();
+        // 失败时删除临时添加的数据
+        const updatedList = this.data.postList.filter(item => item.id !== newPost.id);
+        this.setData({ postList: updatedList });
       });
   },
 

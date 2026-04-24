@@ -24,6 +24,8 @@ class User(db.Model):
     gender = db.Column(db.Integer, default=0, comment="性别：0-未知 1-男 2-女")
     health_goal = db.Column(db.String(50), default="", comment="健康目标：减脂/增肌/维持")
     dietary_preference = db.Column(db.String(100), default="", comment="饮食偏好，如素食、低碳水等")
+    waist = db.Column(db.Float, default=0.0, comment="腰围(cm)")
+    hip = db.Column(db.Float, default=0.0, comment="臀围(cm)")
     
     # 目标营养字段
     target_calorie = db.Column(db.Float, default=0.0, comment="目标热量(大卡)")
@@ -69,6 +71,8 @@ class User(db.Model):
             "gender": gender_str,
             "health_goal": self.health_goal,
             "dietary_preference": self.dietary_preference,
+            "waist": self.waist,
+            "hip": self.hip,
             "target_calorie": self.target_calorie,
             "target_protein": self.target_protein,
             "target_carb": self.target_carb,

@@ -5,7 +5,7 @@ Page({
   data: {
     canIUseGetUserProfile: true,
     isDev: true,
-    loginType: 'wechat', // wechat or phone
+    loginType: 'wechat', // wechat or phone or test
     phoneLoginType: 'sms', // sms or password
     phone: '',
     smsCode: '',
@@ -202,6 +202,59 @@ Page({
       title: '忘记密码功能开发中',
       icon: 'none'
     });
+  },
+
+  // 测试账号登录
+  testLogin() {
+    wx.showLoading({
+      title: '登录中...'
+    });
+
+    post('/user/login', { 
+      username: 'test', 
+      password: '123456' 
+    }, false)
+      .then((result) => {
+        wx.hideLoading();
+        
+        if (result && result.data) {
+          const { token, user_info } = result.data;
+          if (token) {
+            setToken(token);
+            setUserInfo(user_info || {});
+            getApp().updateUserInfo(user_info || {});
+            
+            wx.showToast({
+              title: '登录成功！',
+              icon: 'success'
+            });
+            
+            setTimeout(() => {
+              wx.switchTab({
+                url: '/pages/index/index'
+              });
+            }, 1000);
+          } else {
+            wx.showToast({
+              title: '登录失败',
+              icon: 'none'
+            });
+          }
+        } else {
+          wx.showToast({
+            title: '登录失败',
+            icon: 'none'
+          });
+        }
+      })
+      .catch((err) => {
+        wx.hideLoading();
+        console.error('测试账号登录失败：', err);
+        wx.showToast({
+          title: '登录失败',
+          icon: 'none'
+        });
+      });
   },
 
   mockLogin() {

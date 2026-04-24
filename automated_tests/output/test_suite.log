@@ -3276,3 +3276,103 @@ CREATE TABLE hot_food (
 2026-04-23 03:07:37.946 | INFO     | __main__:run:1566 - 可视化图表: C:\Users\luohu\Desktop\health\automated_tests\output
 2026-04-23 03:07:37.946 | INFO     | __main__:run:1567 - ============================================================
 2026-04-23 03:07:39.234 | INFO     | __main__:run:1573 - ✅ 已在浏览器中打开测试报告
+2026-04-24 03:06:26.776 | INFO     | __main__:run:1531 - ============================================================
+2026-04-24 03:06:26.776 | INFO     | __main__:run:1532 - 🚀 自动化测试套件启动
+2026-04-24 03:06:26.777 | INFO     | __main__:run:1533 - ============================================================
+2026-04-24 03:06:26.777 | INFO     | __main__:run:1537 - 
+============================================================
+2026-04-24 03:06:26.777 | INFO     | __main__:generate_test_data:85 - ============================================================
+2026-04-24 03:06:26.777 | INFO     | __main__:generate_test_data:86 - 读取真实数据库数据
+2026-04-24 03:06:26.777 | INFO     | __main__:generate_test_data:87 - ============================================================
+2026-04-24 03:06:27.834 | INFO     | app.crawler.xhs_drission_crawler:<module>:19 - DrissionPage模块导入成功
+2026-04-24 03:06:27.844 | INFO     | app:create_app:186 - 开始注册蓝图...
+2026-04-24 03:06:27.856 | INFO     | app:create_app:200 - ✅ 所有蓝图注册完成！
+2026-04-24 03:06:27.872 | INFO     | app:start_crawl_on_startup:274 - 后端启动，立即执行一次爬取任务
+2026-04-24 03:06:27.876 | INFO     | app:create_app:288 - 定时任务已启动，每2小时执行一次爬取任务
+2026-04-24 03:06:27.902 | INFO     | __main__:generate_test_data:101 - ============================================================
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:102 - 真实数据读取完成！
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:103 - ============================================================
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:104 - 食谱数: 13
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:105 - 热点美食数: 12
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:106 - 用户数: 11
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:107 - 饮食记录数: 431
+2026-04-24 03:06:27.903 | INFO     | __main__:generate_test_data:108 - 运动记录数: 50
+2026-04-24 03:06:27.904 | INFO     | __main__:generate_test_data:109 - 饮水记录数: 80
+2026-04-24 03:06:27.904 | INFO     | __main__:generate_test_data:110 - 论坛帖子数: 11
+2026-04-24 03:06:27.905 | INFO     | __main__:run:1541 - 
+============================================================
+2026-04-24 03:06:27.905 | INFO     | __main__:run_api_tests:315 - ============================================================
+2026-04-24 03:06:27.905 | INFO     | __main__:run_api_tests:316 - 开始运行API测试
+2026-04-24 03:06:27.906 | INFO     | __main__:run_api_tests:317 - ============================================================
+2026-04-24 03:06:27.917 | INFO     | app:create_app:186 - 开始注册蓝图...
+2026-04-24 03:06:27.928 | INFO     | app:create_app:200 - ✅ 所有蓝图注册完成！
+2026-04-24 03:06:27.937 | INFO     | app:create_app:290 - ⏭️  爬虫任务已禁用，服务快速启动模式
+2026-04-24 03:06:27.937 | INFO     | app.crawler.xhs_drission_crawler:_load_cookies:67 - 未配置 Cookie，使用默认方式爬取
+2026-04-24 03:06:27.937 | INFO     | app.crawler.xhs_drission_crawler:__init__:38 - 初始化浏览器...
+2026-04-24 03:06:28.791 | INFO     | app.crawler.xhs_drission_crawler:_init_page:82 - 页面初始化成功，使用 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
+2026-04-24 03:06:28.791 | INFO     | app.crawler.xhs_drission_crawler:__init__:40 - 浏览器已启动！
+2026-04-24 03:06:28.791 | INFO     | app.crawler.xhs_drission_crawler:__init__:50 - 访问小红书主页...
+2026-04-24 03:06:32.031 | INFO     | __main__:run_api_tests:370 - ✅ 用户登录测试 - 测试通过
+2026-04-24 03:06:34.102 | INFO     | __main__:run_api_tests:370 - ✅ 食谱列表测试 - 测试通过
+2026-04-24 03:06:35.663 | INFO     | app.crawler.xhs_drission_crawler:crawl_xhs_hot_food:678 - 未检测到登录状态，尝试直接爬取
+2026-04-24 03:06:35.664 | INFO     | app.crawler.xhs_drission_crawler:search_hot_food:390 - 开始爬取 美食 的热点美食，第 1 次尝试
+2026-04-24 03:06:36.140 | INFO     | __main__:run_api_tests:370 - ✅ 热点美食测试 - 测试通过
+2026-04-24 03:06:38.178 | INFO     | __main__:run_api_tests:370 - ✅ 食谱推荐测试 - 测试通过
+2026-04-24 03:06:38.179 | INFO     | __main__:run_api_tests:378 - ============================================================
+2026-04-24 03:06:38.180 | INFO     | __main__:run_api_tests:379 - API测试完成！成功: 4, 失败: 0
+2026-04-24 03:06:38.180 | INFO     | __main__:run_api_tests:380 - 总耗时: 10.27秒
+2026-04-24 03:06:38.181 | INFO     | __main__:run_api_tests:381 - ============================================================
+2026-04-24 03:06:38.181 | INFO     | __main__:run:1545 - 
+============================================================
+2026-04-24 03:06:38.182 | INFO     | __main__:run_performance_test:434 - ============================================================
+2026-04-24 03:06:38.182 | INFO     | __main__:run_performance_test:435 - 开始运行性能测试
+2026-04-24 03:06:38.182 | INFO     | __main__:run_performance_test:436 - ============================================================
+2026-04-24 03:06:40.314 | INFO     | __main__:run_performance_test:452 - 测试端点: /api/recipe/list
+2026-04-24 03:06:40.314 | INFO     | __main__:run_performance_test:456 -   并发数: 10
+2026-04-24 03:06:42.418 | INFO     | __main__:run_performance_test:459 -     平均响应时间: 2080.93ms, 成功率: 100.00%
+2026-04-24 03:06:42.419 | INFO     | __main__:run_performance_test:456 -   并发数: 20
+2026-04-24 03:06:44.621 | INFO     | __main__:run_performance_test:459 -     平均响应时间: 2133.98ms, 成功率: 100.00%
+2026-04-24 03:06:44.622 | INFO     | __main__:run_performance_test:456 -   并发数: 30
+2026-04-24 03:06:46.878 | INFO     | __main__:run_performance_test:459 -     平均响应时间: 2165.14ms, 成功率: 100.00%
+2026-04-24 03:06:46.880 | INFO     | __main__:run_performance_test:456 -   并发数: 50
+2026-04-24 03:06:49.312 | INFO     | __main__:run_performance_test:459 -     平均响应时间: 2237.31ms, 成功率: 100.00%
+2026-04-24 03:06:49.312 | INFO     | __main__:run_performance_test:452 - 测试端点: /api/hotfood/list
+2026-04-24 03:06:49.312 | INFO     | __main__:run_performance_test:456 -   并发数: 10
+2026-04-24 03:06:51.091 | INFO     | app.crawler.xhs_drission_crawler:search_hot_food:412 - 找到 12 条笔记
+2026-04-24 03:06:51.386 | INFO     | __main__:run_performance_test:459 -     平均响应时间: 2057.89ms, 成功率: 100.00%
+2026-04-24 03:06:51.386 | INFO     | __main__:run_performance_test:456 -   并发数: 20
+2026-04-24 03:06:51.474 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:51.951 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:52.353 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:52.834 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:53.204 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:53.485 | INFO     | __main__:run_performance_test:459 -     平均响应时间: 2069.47ms, 成功率: 100.00%
+2026-04-24 03:06:53.485 | INFO     | __main__:run_performance_test:456 -   并发数: 30
+2026-04-24 03:06:53.698 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:54.043 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:54.430 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:54.646 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:54.896 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2
+2026-04-24 03:06:55.295 | WARNING  | app.crawler.xhs_drission_crawler:_parse_note:307 - 解析笔记失败：
+与页面的连接已断开。
+版本: 4.1.1.2

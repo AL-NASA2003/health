@@ -16,6 +16,9 @@
     <view class="tab-item {{loginType === 'phone' ? 'active' : ''}}" bindtap="switchLoginType" data-type="phone">
       手机号登录
     </view>
+    <view class="tab-item {{loginType === 'test' ? 'active' : ''}}" bindtap="switchLoginType" data-type="test">
+      测试账号
+    </view>
   </view>
 
   <!-- 登录卡片 -->
@@ -28,6 +31,19 @@
       <text class="wx-login-tips">登录后可使用饮食记录、食谱推荐等功能</text>
     </view>
 
+    <!-- 测试账号登录 -->
+    <view wx:elif="{{loginType === 'test'}}" class="test-login-section">
+      <view class="test-info">
+        <text style="font-size: 28rpx; color: #666; margin-bottom: 20rpx; display: block;">测试账号登录</text>
+        <view style="background: #f5f5f5; padding: 20rpx; border-radius: 10rpx; margin-bottom: 30rpx;">
+          <text style="color: #999; font-size: 24rpx;">账号：test / 密码：123456</text>
+        </view>
+      </view>
+      <button class="test-login-btn" bindtap="testLogin">
+        登录
+      </button>
+    </view>
+    
     <!-- 手机号登录 -->
     <view wx:elif="{{loginType === 'phone'}}" class="phone-login-section">
       <!-- 登录方式切换 -->

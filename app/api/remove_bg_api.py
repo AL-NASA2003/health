@@ -107,7 +107,7 @@ def remove_bg():
         logger.info(f"用户{g.user_id}抠图完成：{filename}")
         return format_response(
             data={"url": file_url, "filename": filename},
-            message="抠图成功！已为您移除背景"
+            msg="抠图成功！已为您移除背景"
         )
         
     except Exception as e:

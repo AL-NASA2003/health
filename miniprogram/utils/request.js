@@ -26,7 +26,7 @@ const CACHE_CONFIG = {
 
 // 请求配置对象
 const REQUEST_CONFIG = {
-  DEFAULT_TIMEOUT: 5000,             // 默认请求超时时间（5秒）- 开发者工具使用更短的超时
+  DEFAULT_TIMEOUT: 60000,             // 默认请求超时时间（60秒）- 图像生成需要更长时间
   MAX_RETRIES: 1,                    // 最大重试次数（减少到1次）
   RETRY_DELAY: 500                   // 重试延迟时间（0.5秒）
 };

@@ -71,6 +71,26 @@
   text-align: center;
 }
 
+/* 测试账号登录 */
+.test-login-section {
+  text-align: center;
+}
+
+.test-login-btn {
+  width: 100%;
+  background-color: #1890ff;
+  color: white;
+  font-size: 32rpx;
+  font-weight: bold;
+  height: 88rpx;
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin-bottom: 20rpx;
+}
+
 .wx-login-btn {
   background-color: #07c160;
   color: white;

@@ -10,16 +10,30 @@ logger.info("=" * 60)
 logger.info("健康饮食系统 - 启动准备")
 logger.info("=" * 60)
 
-# 1. 显示启动选择器
-try:
-    from launcher import select_mode
-    mode = select_mode()
-    logger.info(f"数据模式: {mode}")
-except Exception as e:
-    logger.warning(f"启动选择器失败: {e}")
-    logger.info("默认使用虚拟数据模式")
+# 检查命令行参数是否有 --quick 选项
+use_quick_mode = '--quick' in sys.argv or '-q' in sys.argv
+if use_quick_mode:
+    logger.info("使用快速启动模式")
     mode = "VIRTUAL"
     os.environ['HEALTH_DATA_MODE'] = mode
+    os.environ['DISABLE_SCHEDULER'] = 'True'
+else:
+    # 1. 显示启动选择器
+    try:
+        from launcher import select_mode
+        mode = select_mode()
+        logger.info(f"数据模式: {mode}")
+    except Exception as e:
+        logger.warning(f"启动选择器失败: {e}")
+        logger.info("默认使用虚拟数据模式")
+        mode = "VIRTUAL"
+        os.environ['HEALTH_DATA_MODE'] = mode
+
+# 设置是否禁用爬虫调度器
+if mode == "VIRTUAL":
+    os.environ['DISABLE_SCHEDULER'] = 'True'
+else:
+    os.environ['DISABLE_SCHEDULER'] = 'False'
 
 # 2. 创建应用
 logger.info("\n正在创建应用实例...")
